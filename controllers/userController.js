@@ -257,7 +257,6 @@ exports.getsindleUserByAdmin = asyncErrorHandler(async (req, res, next) => {
 exports.updateUserByAdmin = asyncErrorHandler(async (req, res, next) => {
   const newUserData = {
     name: req.body.name,
-    email: req.body.email,
     role: req.body.role,
   };
 
@@ -272,9 +271,22 @@ exports.updateUserByAdmin = asyncErrorHandler(async (req, res, next) => {
       new ErrorHandler(`user not found with id ${req.params.id}`, 404)
     );
   }
-  res.status(200).json({
-    success: true,
-  });
+  const message = `your information is updated by Admin`;
+
+  try {
+    await sendEmail({
+      email: user.email,
+      subject: `Ecommerce Project OTP `,
+      message,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: `Email sent to ${user.email} successfully`,
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 500));
+  }
 });
 
 exports.deleteUserByAdmin = asyncErrorHandler(async (req, res, next) => {
