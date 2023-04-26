@@ -19,7 +19,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(fileUpload());
 
 app.get("/", (req, res) => {
-  res.status(200).json("App is running");
+  res.status(200).json("App is running perfectly");
 });
 app.use("/api/v1", product);
 app.use("/api/v1", user);
