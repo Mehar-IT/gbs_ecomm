@@ -8,17 +8,8 @@ const cloudinary = require("cloudinary");
 // const http = require("http");
 
 exports.registerUser = asyncErrorHandler(async (req, res, next) => {
-  const { name, email, password, avatar } = req.body;
+  const { name, email, password } = req.body;
   const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
-
-  if (avatar === "undefined") {
-    return next(new ErrorHandler("Image not found", 404));
-  }
-  const myCloud = await cloudinary.v2.uploader.upload(avatar, {
-    folder: "profile",
-    width: 150,
-    crop: "scale",
-  });
 
   const user = await User.create({
     name,
@@ -26,13 +17,34 @@ exports.registerUser = asyncErrorHandler(async (req, res, next) => {
     password,
     userIP: ip,
     avatar: {
-      public_id: myCloud.public_id,
-      url: myCloud.secure_url,
+      public_id: "random",
+      url: "https://www.seekpng.com/png/detail/110-1100707_person-avatar-placeholder.png",
     },
   });
 
-  const userData = await User.findById(user._id);
-  sendToken(userData, 201, res);
+  const token = user.otpGeneration();
+  await user.save({ validateBeforeSave: true });
+
+  const message = `your OTP token is :- \n\n ${token} \n\n If you have not requested this OTP then, please ignore it`;
+
+  try {
+    await sendEmail({
+      email,
+      subject: `Ecommerce Project OTP `,
+      message,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: `OPT sent to ${email} successfully`,
+    });
+  } catch (error) {
+    user.otpToken = undefined;
+    user.optExpire = undefined;
+    await user.save({ validateBeforeSave: false });
+
+    return next(new ErrorHandler(error.message, 500));
+  }
 });
 
 exports.loginUser = asyncErrorHandler(async (req, res, next) => {
@@ -49,6 +61,32 @@ exports.loginUser = asyncErrorHandler(async (req, res, next) => {
 
   if (!isPasswordMatch) {
     return next(new ErrorHandler("Invalid email and password", 401));
+  }
+
+  if (!user.isVerified) {
+    const token = user.otpGeneration();
+    await user.save({ validateBeforeSave: false });
+
+    const message = `your OTP token is :- \n\n ${token} \n\n If you have not requested this OTP then, please ignore it`;
+
+    try {
+      await sendEmail({
+        email,
+        subject: `Ecommerce Porject OTP `,
+        message,
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: `you are not Verified your email!!! OPT is sent to ${email} successfully`,
+      });
+    } catch (error) {
+      user.otpToken = undefined;
+      user.optExpire = undefined;
+      await user.save({ validateBeforeSave: false });
+
+      return next(new ErrorHandler(error.message, 500));
+    }
   }
   const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
   user.userIP = ip;
@@ -164,10 +202,10 @@ exports.updatePassword = asyncErrorHandler(async (req, res, next) => {
   sendToken(user, 200, res);
 });
 
-exports.updateUserProfile = asyncErrorHandler(async (req, res, next) => {
-  const newUserData = { name: req.body.name, email: req.body.email };
+exports.updateUserProfile = asyncErrorHandler(async (req, res) => {
+  const newUserData = { name: req.body.name };
 
-  if (req.body.avatar !== "") {
+  if (req.body.avatar !== "" && req.body.avatar !== undefined) {
     const user = await User.findById(req.user.id);
     const imageId = user.avatar.public_id;
     await cloudinary.v2.uploader.destroy(imageId);
@@ -257,6 +295,69 @@ exports.deleteUserByAdmin = asyncErrorHandler(async (req, res, next) => {
     success: true,
     message: "User Deleted Successfully",
   });
+});
+
+exports.validateOTP = asyncErrorHandler(async (req, res, next) => {
+  const { email, otp } = req.body;
+
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    return next(new ErrorHandler("Email address not found", 404));
+  }
+
+  if (user.isVerified) {
+    return next(new ErrorHandler("Email address already verified", 400));
+  }
+
+  if (otp === user.otpToken) {
+    user.optExpire = undefined;
+    user.otpToken = undefined;
+    await user.save({ validateBeforeSave: false });
+
+    sendToken(user, 200, res);
+  } else {
+    return next(
+      new ErrorHandler("OTP token is invalid or has been expired", 400)
+    );
+  }
+});
+
+exports.resentOTP = asyncErrorHandler(async (req, res, next) => {
+  const email = req.params.email;
+
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    return next(new ErrorHandler("user not found", 404));
+  }
+
+  if (user.isVerified) {
+    return next(new ErrorHandler("Email address already verified", 400));
+  }
+
+  const token = user.otpGeneration();
+  await user.save({ validateBeforeSave: false });
+
+  const message = `your OTP token is :- \n\n ${token} \n\n If you have not requested this OTP then, please ignore it`;
+
+  try {
+    await sendEmail({
+      email: email,
+      subject: `Ecommerce Project OTP `,
+      message,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: `Email sent to ${email} successfully`,
+    });
+  } catch (error) {
+    user.otpToken = undefined;
+    user.optExpire = undefined;
+    await user.save({ validateBeforeSave: false });
+    return next(new ErrorHandler(error.message, 500));
+  }
 });
 
 // Importing https module

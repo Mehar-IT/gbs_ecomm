@@ -12,6 +12,8 @@ const {
   getsindleUserByAdmin,
   updateUserByAdmin,
   deleteUserByAdmin,
+  validateOTP,
+  resentOTP,
   // getUserIp,
 } = require("../controllers/userController");
 const { isAuthenticated, authorizeRole } = require("../middleware/auth");
@@ -23,6 +25,8 @@ router.route("/password/forgot").post(forgotPassword);
 router.route("/password/update").put(isAuthenticated, updatePassword);
 router.route("/me/update").put(isAuthenticated, updateUserProfile);
 router.route("/me").get(isAuthenticated, getUserDetails);
+router.route("/validateOTP").post(validateOTP);
+router.route("/resentOTP/:email").post(resentOTP);
 // router.route("/userIP").get(getUserIp);
 router.route("/password/reset/:token").put(resetPassword);
 router.route("/logout").get(logoutUser);

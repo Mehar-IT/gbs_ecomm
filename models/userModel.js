@@ -45,8 +45,14 @@ const userSchema = new mongoose.Schema({
     type: String,
     select: false,
   },
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
   resetPasswordToken: String,
   resetPasswordExpire: Date,
+  otpToken: String,
+  optExpire: Date,
 });
 
 userSchema.pre("save", async function (next) {
@@ -72,6 +78,13 @@ userSchema.methods.resetPassword = function () {
   this.resetPasswordExpire = Date.now() + 15 * 60 * 1000;
 
   return resetToken;
+};
+
+userSchema.methods.otpGeneration = function () {
+  const opt = Math.floor(10000 + Math.random() * 9000);
+  this.otpToken = opt;
+  this.optExpire = Date.now() + 15 * 60 * 1000;
+  return opt;
 };
 
 userSchema.methods.comparePassowrd = async function (password) {

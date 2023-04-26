@@ -1,7 +1,9 @@
 const Order = require("../models/orderModel");
+const User = require("../models/userModel");
 const Product = require("../models/productModel");
 const ErrorHandler = require("../utils/errorhandlers");
 const asyncErrorHandler = require("../middleware/asyncErrorHandler");
+const sendEmail = require("../utils/sendEmail");
 
 exports.newOrder = asyncErrorHandler(async (req, res) => {
   const {
@@ -25,11 +27,25 @@ exports.newOrder = asyncErrorHandler(async (req, res) => {
     paidAt: Date.now(),
     user: req.user._id,
   });
+  const message = `your Order is confirmed your order id is ${order._id}`;
 
-  res.status(200).json({
-    success: true,
-    order,
-  });
+  const user = await User.findById(req.user._id);
+
+  try {
+    await sendEmail({
+      email: user.email,
+      subject: `Ecommerce Order`,
+      message,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: `Email sent to ${user.email} successfully`,
+      order,
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 500));
+  }
 });
 
 exports.getSingleOrder = asyncErrorHandler(async (req, res, next) => {
@@ -74,7 +90,10 @@ exports.getAllOrder = asyncErrorHandler(async (req, res) => {
 });
 
 exports.updateOrder = asyncErrorHandler(async (req, res, next) => {
-  const order = await Order.findById(req.params.id);
+  const order = await Order.findById(req.params.id).populate({
+    path: "user",
+    select: "email",
+  });
 
   if (!order) {
     return next(new ErrorHandler("order not found with this id", 404));
@@ -88,24 +107,47 @@ exports.updateOrder = asyncErrorHandler(async (req, res, next) => {
 
   if (req.body.status === "shipped") {
     order.orderItems.forEach(async (order) => {
-      await updateStock(order.product, order.quantity);
+      await updateStock(
+        order.product,
+        order.quantity,
+        order._id,
+        order.email,
+        req.body.status
+      );
     });
   }
 
   order.orderStatus = req.body.status;
   if (req.body.status === "delivered") {
     order.deliveredAt = Date.now();
+    sendEmailOrder(req.body.status, order._id, order.email);
   }
   await order.save({ validateBeforeSave: false });
+
   res.status(200).json({
     success: true,
+    message: `Email sent to ${order.email} successfully`,
   });
 });
 
-async function updateStock(id, quantity) {
+async function updateStock(id, quantity, orderID, email, status) {
   const product = await Product.findById(id);
   product.stock -= quantity;
   await product.save({ validateBeforeSave: false });
+  sendEmailOrder(status, orderID, email);
+}
+
+async function sendEmailOrder(status, orderID, email) {
+  const message = `your Order is ${status} against order id ${orderID}`;
+  try {
+    await sendEmail({
+      email,
+      subject: `Ecommerce Order`,
+      message,
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 500));
+  }
 }
 
 exports.deleteOrder = asyncErrorHandler(async (req, res, next) => {
