@@ -34,7 +34,7 @@ exports.registerUser = asyncErrorHandler(async (req, res, next) => {
       message,
     });
 
-    res.status(200).json({
+    res.status(201).json({
       success: true,
       message: `OPT sent to ${email} successfully`,
     });
@@ -76,7 +76,7 @@ exports.loginUser = asyncErrorHandler(async (req, res, next) => {
         message,
       });
 
-      return res.status(200).json({
+      return res.status(201).json({
         success: true,
         message: `you are not Verified your email!!! OPT is sent to ${email} successfully`,
       });
@@ -325,6 +325,7 @@ exports.validateOTP = asyncErrorHandler(async (req, res, next) => {
   if (otp === user.otpToken) {
     user.optExpire = undefined;
     user.otpToken = undefined;
+    user.isVerified = true;
     await user.save({ validateBeforeSave: false });
 
     sendToken(user, 200, res);
