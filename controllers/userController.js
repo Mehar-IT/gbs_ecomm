@@ -11,7 +11,7 @@ exports.registerUser = asyncErrorHandler(async (req, res, next) => {
   const { name, email, password } = req.body;
   const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
 
-  const user = await User.create({
+  const user = await User({
     name,
     email,
     password,
@@ -90,7 +90,7 @@ exports.loginUser = asyncErrorHandler(async (req, res, next) => {
   }
   const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
   user.userIP = ip;
-  user.save({ validateBeforeSave: true });
+  await user.save({ validateBeforeSave: true });
 
   const userData = await User.findById(user._id);
   sendToken(userData, 200, res);
