@@ -13,9 +13,9 @@ const fileUpload = require("express-fileupload");
 
 // app.set("trust proxy", true);
 app.use(cors({ credentials: true, origin: true }));
-app.use(express.json());
+app.use(express.json({ limit: "100mb" }));
 app.use(cookieParser());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ limit: "100mb", extended: true }));
 app.use(fileUpload());
 
 app.get("/", (req, res) => {
