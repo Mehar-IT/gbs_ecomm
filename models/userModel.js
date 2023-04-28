@@ -3,6 +3,7 @@ const validator = require("validator");
 const bcryptjs = require("bcryptjs");
 const JWT = require("jsonwebtoken");
 const crypto = require("crypto");
+const { encryptData } = require("../utils/cipher");
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -63,9 +64,10 @@ userSchema.pre("save", async function (next) {
 });
 
 userSchema.methods.getJwtToken = function () {
-  return JWT.sign({ id: this._id }, process.env.JWT_KEY, {
+  const token = JWT.sign({ id: this._id }, process.env.JWT_KEY, {
     expiresIn: process.env.JWT_EXPIRE,
   });
+  return encryptData(token);
 };
 
 userSchema.methods.resetPassword = function () {
