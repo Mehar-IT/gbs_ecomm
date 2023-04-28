@@ -19,6 +19,8 @@ exports.createProduct = asyncErrorHandler(async (req, res, next) => {
   for (let i = 0; i < images.length; i++) {
     const result = await cloudinary.v2.uploader.upload(images[i], {
       folder: "items",
+      width: 300,
+      crop: "scale",
     });
     imagesLink.push({
       public_id: result.public_id,
