@@ -290,7 +290,7 @@ exports.updateUserByAdmin = asyncErrorHandler(async (req, res, next) => {
 });
 
 exports.deleteUserByAdmin = asyncErrorHandler(async (req, res, next) => {
-  const user = await User.findById(req.params.id);
+  const user = await User.findByIdAndDelete(req.params.id);
 
   if (!user) {
     return next(
@@ -301,7 +301,7 @@ exports.deleteUserByAdmin = asyncErrorHandler(async (req, res, next) => {
   const imageId = user.avatar.public_id;
   await cloudinary.v2.uploader.destroy(imageId);
 
-  await user.remove();
+  // await user.remove();
 
   res.status(200).json({
     success: true,
