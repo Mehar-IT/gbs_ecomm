@@ -39,21 +39,21 @@ exports.createProduct = asyncErrorHandler(async (req, res, next) => {
 });
 
 exports.getAllProducts = asyncErrorHandler(async (req, res) => {
-  const resultPerPage = 8;
+  // const resultPerPage = 8;
   const productCount = await Product.countDocuments();
   const apifeature = new ApiFeature(Product.find(), req.query)
     .search()
     .filter();
   let products = await apifeature.query;
   let filteredProductsCount = products.length;
-  apifeature.pagination(resultPerPage);
-  products = await apifeature.query.clone();
+  // apifeature.pagination(resultPerPage);
+  // products = await apifeature.query.clone();
 
   res.status(200).json({
     success: true,
     products,
     productCount,
-    resultPerPage,
+    // resultPerPage,
     filteredProductsCount,
   });
 });
