@@ -24,6 +24,9 @@ exports.newOrder = asyncErrorHandler(async (req, res) => {
     taxPrice,
     shippingPrice,
     totalPrice,
+    vat: req.body?.vat,
+    businessName: req.body?.businessName,
+    businessAddress: req.body?.businessAddress,
     paidAt: Date.now(),
     user: req.user._id,
   });

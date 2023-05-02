@@ -77,6 +77,9 @@ const orderSchema = new mongoose.Schema(
       default: "processing",
       required: true,
     },
+    businessName: String,
+    businessAddress: String,
+    vat: String,
     deliveredAt: Date,
   },
   { timestamps: true }
