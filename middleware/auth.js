@@ -8,7 +8,7 @@ const Roles = require("../models/userRolesModel");
 exports.isAuthenticated = asyncErrorHandler(async (req, res, next) => {
   const { token } = req.cookies;
   if (!token) {
-    return next(new ErrorHandler("please login to access  this resource", 401));
+    return next(new ErrorHandler("please login to access this resource", 401));
   }
 
   const decodedToken = decryptData(token);

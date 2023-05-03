@@ -40,7 +40,7 @@ const userSchema = new mongoose.Schema({
   // },
   role: {
     type: String,
-    default: "wanderer",
+    default: "user",
   },
   createdAt: {
     type: Date,
