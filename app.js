@@ -44,7 +44,7 @@ app._router.stack.forEach((middleware) => {
       if (handler.route) {
         const route = {
           path:
-            middleware.regexp.source.replace(/[\\^?(=|)$]/g, "").slice(0, -2) +
+            // middleware.regexp.source.replace(/[\\^?(=|)$]/g, "").slice(0, -2) +
             handler.route.path,
           method: Object.keys(handler.route.methods)[0].toUpperCase(),
         };
