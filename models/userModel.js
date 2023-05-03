@@ -34,9 +34,13 @@ const userSchema = new mongoose.Schema({
       required: true,
     },
   },
+  // role: {
+  //   type: mongoose.Schema.ObjectId,
+  //   ref: "User",
+  // },
   role: {
     type: String,
-    default: "user",
+    default: "wanderer",
   },
   createdAt: {
     type: Date,

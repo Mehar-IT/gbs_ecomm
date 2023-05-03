@@ -3,6 +3,7 @@ const asyncErrorHandler = require("./asyncErrorHandler");
 const JWT = require("jsonwebtoken");
 const User = require("../models/userModel");
 const { decryptData } = require("../utils/cipher");
+const Roles = require("../models/userRolesModel");
 
 exports.isAuthenticated = asyncErrorHandler(async (req, res, next) => {
   const { token } = req.cookies;
@@ -30,3 +31,22 @@ exports.authorizeRole = (...roles) => {
     next();
   };
 };
+
+exports.authorizePermisions = asyncErrorHandler(async (req, res, next) => {
+  const roles = await Roles.findOne({ role: req.user.role });
+
+  if (
+    roles.permissions.forEach(
+      ({ path, method }) =>
+        path.includes(req.originalUrl) && method.includes(req.method)
+    )
+  ) {
+    return next(
+      new ErrorHandler(
+        `role ${req.user.role} is not allowed to access this resource`,
+        403
+      )
+    );
+  }
+  next();
+});

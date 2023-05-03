@@ -10,22 +10,50 @@ const {
   // getProductReviews,
   // deleteReview,
 } = require("../controllers/productController");
-const { isAuthenticated, authorizeRole } = require("../middleware/auth");
+const {
+  isAuthenticated,
+  authorizePermisions,
+  authorizeRole,
+} = require("../middleware/auth");
 
 const router = express.Router();
 
-router.route("/products").get(getAllProducts);
 router
-  .route("/admin/product/new")
-  .post(isAuthenticated, authorizeRole("admin"), createProduct);
+  .route("/products/getallproducts")
+  .get(authorizePermisions, getAllProducts);
 router
-  .route("/admin/product/:id")
-  .put(isAuthenticated, authorizeRole("admin"), updateProduct)
-  .delete(isAuthenticated, authorizeRole("admin"), deleteProduct);
+  .route("/products/admin/createProduct")
+  .post(
+    isAuthenticated,
+    authorizeRole("admin"),
+    authorizePermisions,
+    createProduct
+  );
 router
-  .route("/admin/products")
-  .get(isAuthenticated, authorizeRole("admin"), getAdminProducts);
-router.route("/product/:id").get(getProductDetail);
+  .route("/products/admin/updateProduct/:id")
+  .put(
+    isAuthenticated,
+    authorizeRole("admin"),
+    authorizePermisions,
+    updateProduct
+  );
+router
+  .route("/products/admin/deleteProduct/:id")
+  .delete(
+    isAuthenticated,
+    authorizeRole("admin"),
+    authorizePermisions,
+    deleteProduct
+  );
+router
+  .route("/products/admin/getallproducts")
+  .get(
+    isAuthenticated,
+    authorizeRole("admin"),
+    authorizePermisions,
+    getAdminProducts
+  );
+router.route("/products/getProductDetail/:id").get(getProductDetail);
 
 // router.route("/review").put(isAuthenticated, createProductReview);
 // router

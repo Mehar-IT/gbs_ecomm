@@ -16,27 +16,62 @@ const {
   resentOTP,
   // getUserIp,
 } = require("../controllers/userController");
-const { isAuthenticated, authorizeRole } = require("../middleware/auth");
+const {
+  isAuthenticated,
+  authorizeRole,
+  authorizePermisions,
+} = require("../middleware/auth");
 const router = express.Router();
 
-router.route("/register").post(registerUser);
-router.route("/login").post(loginUser);
-router.route("/password/forgot").post(forgotPassword);
-router.route("/password/update").put(isAuthenticated, updatePassword);
-router.route("/me/update").put(isAuthenticated, updateUserProfile);
-router.route("/me").get(isAuthenticated, getUserDetails);
-router.route("/validateOTP").post(validateOTP);
-router.route("/resentOTP/:email").post(resentOTP);
-// router.route("/userIP").get(getUserIp);
-router.route("/password/reset/:token").put(resetPassword);
-router.route("/logout").get(logoutUser);
+router.route("/auth/register").post(registerUser);
+router.route("/auth/login").post(loginUser);
+router.route("/auth/password/forgot").post(forgotPassword);
+router.route("/auth/validateOTP").post(validateOTP);
+router.route("/auth/resentOTP/:email").post(resentOTP);
+router.route("/auth/password/reset/:token").put(resetPassword);
+router.route("/auth/logout").get(logoutUser);
+
 router
-  .route("/admin/users")
-  .get(isAuthenticated, authorizeRole("admin"), getAllUsers);
+  .route("/users/getUserDetail")
+  .get(isAuthenticated, authorizePermisions, getUserDetails);
 router
-  .route("/admin/users/:id")
-  .get(isAuthenticated, authorizeRole("admin"), getsindleUserByAdmin)
-  .put(isAuthenticated, authorizeRole("admin"), updateUserByAdmin)
-  .delete(isAuthenticated, authorizeRole("admin"), deleteUserByAdmin);
+  .route("/users/password/update")
+  .put(isAuthenticated, authorizePermisions, updatePassword);
+router
+  .route("/users/updateProfile")
+  .put(isAuthenticated, authorizePermisions, updateUserProfile);
+router
+  .route("/users/admin/getallusers")
+  .get(
+    isAuthenticated,
+    authorizeRole("admin"),
+    authorizePermisions,
+    getAllUsers
+  );
+router
+  .route("/users/admin/getSingleUser/:id")
+  .get(
+    isAuthenticated,
+    authorizeRole("admin"),
+    authorizePermisions,
+    getsindleUserByAdmin
+  );
+
+router
+  .route("/userss/admin/updateUser/:id")
+  .put(
+    isAuthenticated,
+    authorizeRole("admin"),
+    authorizePermisions,
+    updateUserByAdmin
+  );
+router
+  .route("/users/admin/deleteUsers/:id")
+  .delete(
+    isAuthenticated,
+    authorizeRole("admin"),
+    authorizePermisions,
+    deleteUserByAdmin
+  );
 
 module.exports = router;
