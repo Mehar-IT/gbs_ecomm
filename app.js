@@ -55,7 +55,7 @@ app._router.stack.forEach((middleware) => {
 });
 
 app.get(
-  "/getAllEndPoints",
+  "/api/v1/getAllEndPoints",
   isAuthenticated,
   authorizeRole("admin"),
   (req, res) => {

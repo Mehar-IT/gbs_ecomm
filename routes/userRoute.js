@@ -59,7 +59,7 @@ router
   );
 
 router
-  .route("/userss/admin/updateUser/:id")
+  .route("/users/admin/updateUser/:id")
   .put(
     isAuthenticated,
     authorizeRole("admin"),
