@@ -60,7 +60,7 @@ exports.getSingleRole = asyncErrorHandler(async (req, res, next) => {
   const role = await Roles.findById(req.params.id);
 
   if (!role) {
-    return next(new ErrorHandler("Product not found", 404));
+    return next(new ErrorHandler("Role not found", 404));
   }
 
   res.status(200).json({

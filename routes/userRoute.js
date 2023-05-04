@@ -19,7 +19,7 @@ const {
 } = require("../controllers/userController");
 const {
   isAuthenticated,
-  authorizeRole,
+  // authorizeRole,
   authorizePermisions,
 } = require("../middleware/auth");
 const router = express.Router();
@@ -41,46 +41,36 @@ router
 router
   .route("/users/updateProfile")
   .put(isAuthenticated, authorizePermisions, updateUserProfile);
-router
-  .route("/users/admin/getallusers")
-  .get(
-    isAuthenticated,
-    authorizeRole("admin"),
-    authorizePermisions,
-    getAllUsers
-  );
-router
-  .route("/users/admin/getSingleUser/:id")
-  .get(
-    isAuthenticated,
-    authorizeRole("admin"),
-    authorizePermisions,
-    getsindleUserByAdmin
-  );
+router.route("/users/admin/getallusers").get(
+  isAuthenticated,
+  // authorizeRole("admin"),
+  authorizePermisions,
+  getAllUsers
+);
+router.route("/users/admin/getSingleUser/:id").get(
+  isAuthenticated,
+  // authorizeRole("admin"),
+  authorizePermisions,
+  getsindleUserByAdmin
+);
 
-router
-  .route("/users/admin/updateUser/:id")
-  .put(
-    isAuthenticated,
-    authorizeRole("admin"),
-    authorizePermisions,
-    updateUserByAdmin
-  );
-router
-  .route("/users/admin/deleteUsers/:id")
-  .delete(
-    isAuthenticated,
-    authorizeRole("admin"),
-    authorizePermisions,
-    deleteUserByAdmin
-  );
-router
-  .route("/users/admin/userApproval/:id")
-  .put(
-    isAuthenticated,
-    authorizeRole("admin"),
-    authorizePermisions,
-    approvalUserByAdmin
-  );
+router.route("/users/admin/updateUser/:id").put(
+  isAuthenticated,
+  // authorizeRole("admin"),
+  authorizePermisions,
+  updateUserByAdmin
+);
+router.route("/users/admin/deleteUsers/:id").delete(
+  isAuthenticated,
+  // authorizeRole("admin"),
+  authorizePermisions,
+  deleteUserByAdmin
+);
+router.route("/users/admin/userApproval/:id").put(
+  isAuthenticated,
+  // authorizeRole("admin"),
+  authorizePermisions,
+  approvalUserByAdmin
+);
 
 module.exports = router;
