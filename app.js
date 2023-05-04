@@ -61,7 +61,8 @@ routes.map(({ path, method }) => {
   if (
     !path.startsWith("/roles") &&
     !path.startsWith("/auth") &&
-    !path.startsWith("/products/getallproducts")
+    !path.startsWith("/products/getallproducts") &&
+    !path.startsWith("/products/getProductDetail")
   ) {
     let data = path
       .replace(/[/]/g, " ")
