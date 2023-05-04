@@ -55,7 +55,7 @@ app._router.stack.forEach((middleware) => {
   }
 });
 
-const allRoutes = [];
+let allRoutes = [];
 
 routes.map(({ path, method }) => {
   if (
@@ -63,9 +63,15 @@ routes.map(({ path, method }) => {
     !path.startsWith("/auth") &&
     !path.startsWith("/products/getallproducts")
   ) {
+    let data = path
+      .replace(/[/]/g, " ")
+      .substring(1)
+      .replace(" :id", "")
+      .split(" ");
+
     allRoutes.push({
       path: path,
-      title: path.replace(/[/]/g, " ").substring(1),
+      title: data[data.length - 1],
       method: method,
     });
   }
@@ -76,7 +82,7 @@ app.get(
   isAuthenticated,
   authorizeRole("admin"),
   (req, res) => {
-    res.status(200).json({ routes, count: routes.length });
+    res.status(200).json({ allRoutes, count: routes.length });
   }
 );
 
