@@ -14,6 +14,7 @@ const {
   deleteUserByAdmin,
   validateOTP,
   resentOTP,
+  approvalUserByAdmin,
   // getUserIp,
 } = require("../controllers/userController");
 const {
@@ -72,6 +73,14 @@ router
     authorizeRole("admin"),
     authorizePermisions,
     deleteUserByAdmin
+  );
+router
+  .route("/users/admin/userApproval/:id")
+  .put(
+    isAuthenticated,
+    authorizeRole("admin"),
+    authorizePermisions,
+    approvalUserByAdmin
   );
 
 module.exports = router;

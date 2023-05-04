@@ -54,6 +54,10 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  approvalByAdmin: {
+    type: Boolean,
+    default: false,
+  },
   resetPasswordToken: String,
   resetPasswordExpire: Date,
   otpToken: String,

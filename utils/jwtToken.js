@@ -7,7 +7,7 @@ const sendToken = (user, status, res) => {
     ),
     httpOnly: true,
     sameSite: "none",
-    // secure: true,
+    secure: true,
   };
 
   res.status(status).cookie("token", token, option).json({

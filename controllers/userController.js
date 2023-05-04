@@ -88,6 +88,12 @@ exports.loginUser = asyncErrorHandler(async (req, res, next) => {
       return next(new ErrorHandler(error.message, 500));
     }
   }
+  if (!user.approvalByAdmin) {
+    return res.status(201).json({
+      success: true,
+      message: `you are not approved by Admin....please wait for your approval`,
+    });
+  }
   const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
   user.userIP = ip;
   await user.save({ validateBeforeSave: true });
@@ -328,7 +334,11 @@ exports.validateOTP = asyncErrorHandler(async (req, res, next) => {
     user.isVerified = true;
     await user.save({ validateBeforeSave: false });
 
-    sendToken(user, 200, res);
+    // sendToken(user, 200, res);
+    res.status(200).json({
+      success: true,
+      message: `you approved your email and your request is submitted to admin wait for approval by admin`,
+    });
   } else {
     return next(
       new ErrorHandler("OTP token is invalid or has been expired", 400)
@@ -373,6 +383,27 @@ exports.resentOTP = asyncErrorHandler(async (req, res, next) => {
   }
 });
 
+exports.approvalUserByAdmin = asyncErrorHandler(async (req, res, next) => {
+  const { approvalByAdmin } = req.body;
+
+  const user = await User.findByIdAndUpdate(
+    req.params.id,
+    { approvalByAdmin },
+    {
+      new: true,
+      runValidators: true,
+      userFindandModify: false,
+    }
+  );
+  if (!user) {
+    return next(
+      new ErrorHandler(`user not found with id ${req.params.id}`, 404)
+    );
+  }
+  res.status(200).json({
+    success: true,
+  });
+});
 // Importing https module
 // exports.getUserIp = asyncErrorHandler(async (req, res, next) => {
 //   // const user_IP = req.socket.remoteAddress;
