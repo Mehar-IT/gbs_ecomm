@@ -31,14 +31,15 @@ app.use("/api/v1", payment);
 
 const routes = [];
 app._router.stack.forEach((middleware) => {
-  if (middleware.route) {
-    // Route middleware
-    const route = {
-      path: middleware.route.path,
-      method: Object.keys(middleware.route.methods)[0].toUpperCase(),
-    };
-    routes.push(route);
-  } else if (middleware.name === "router") {
+  // if (middleware.route) {
+  //   // Route middleware
+  //   const route = {
+  //     path: middleware.route.path,
+  //     method: Object.keys(middleware.route.methods)[0].toUpperCase(),
+  //   };
+  //   routes.push(route);
+  // } else
+  if (middleware.name === "router") {
     // Sub-router middleware
     middleware.handle.stack.forEach((handler) => {
       if (handler.route) {
@@ -50,6 +51,22 @@ app._router.stack.forEach((middleware) => {
         };
         routes.push(route);
       }
+    });
+  }
+});
+
+const allRoutes = [];
+
+routes.map(({ path, method }) => {
+  if (
+    !path.startsWith("/roles") &&
+    !path.startsWith("/auth") &&
+    !path.startsWith("/products/getallproducts")
+  ) {
+    allRoutes.push({
+      path: path,
+      title: path.replace(/[/]/g, " ").substring(1),
+      method: method,
     });
   }
 });
