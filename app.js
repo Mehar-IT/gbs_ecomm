@@ -21,7 +21,7 @@ app.use(bodyParser.urlencoded({ limit: "100mb", extended: true }));
 app.use(fileUpload());
 
 app.get("/", (req, res) => {
-  res.status(200).json("App is running perfectly");
+  res.status(200).json("app is running perfectly on cyclic");
 });
 app.use("/api/v1", roles);
 app.use("/api/v1", product);
