@@ -6,10 +6,10 @@ exports.createRole = asyncErrorHandler(async (req, res, next) => {
   const { role, permissions } = req.body;
   let user_permissions = [];
 
-  if (typeof permissions !== "object") {
-    user_permissions = permissions;
-  } else {
+  if (typeof permissions === "string") {
     user_permissions.push(permissions);
+  } else {
+    user_permissions = permissions;
   }
   const roles = await Roles.create({ role, permissions: user_permissions });
   res.status(201).json({
@@ -21,10 +21,10 @@ exports.createRole = asyncErrorHandler(async (req, res, next) => {
 exports.updateRole = asyncErrorHandler(async (req, res, next) => {
   let permissions = [];
 
-  if (typeof req.body.permissions !== "object") {
-    permissions = req.body.permissions;
-  } else {
+  if (typeof req.body.permissions === "string") {
     permissions.push(req.body.permissions);
+  } else {
+    permissions = req.body.permissions;
   }
 
   let role = await Roles.findOneAndUpdate({ role: req.query.role }, req.body, {

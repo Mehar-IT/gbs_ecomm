@@ -35,6 +35,15 @@ exports.authorizeRole = (...roles) => {
 exports.authorizePermisions = asyncErrorHandler(async (req, res, next) => {
   const roles = await Roles.findOne({ role: req.user.role });
 
+  if (roles === null) {
+    return next(
+      new ErrorHandler(
+        `your role is not added by admin to access this resource`,
+        403
+      )
+    );
+  }
+
   if (
     roles.permissions.forEach(
       ({ path, method }) =>
