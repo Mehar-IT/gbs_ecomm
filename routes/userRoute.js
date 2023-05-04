@@ -36,7 +36,7 @@ router
   .route("/users/getUserDetail")
   .get(isAuthenticated, authorizePermisions, getUserDetails);
 router
-  .route("/users/password/update")
+  .route("/users/password-update")
   .put(isAuthenticated, authorizePermisions, updatePassword);
 router
   .route("/users/updateProfile")

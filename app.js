@@ -82,7 +82,7 @@ app.get(
   isAuthenticated,
   authorizeRole("admin"),
   (req, res) => {
-    res.status(200).json({ allRoutes, count: routes.length });
+    res.status(200).json({ allRoutes, count: allRoutes.length });
   }
 );
 

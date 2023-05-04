@@ -44,7 +44,7 @@ router
     deleteProduct
   );
 router
-  .route("/products/admin/getallproducts")
+  .route("/products/admin/allProductsByAdmin")
   .get(
     isAuthenticated,
     authorizeRole("admin"),
