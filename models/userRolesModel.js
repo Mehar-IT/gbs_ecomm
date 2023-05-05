@@ -13,6 +13,7 @@ const RoleSchema = new Schema({
   },
   permissions: [
     {
+      title: String,
       path: String,
       method: String,
     },
