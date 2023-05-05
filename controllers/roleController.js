@@ -27,7 +27,7 @@ exports.updateRole = asyncErrorHandler(async (req, res, next) => {
     permissions = req.body.permissions;
   }
 
-  let role = await Roles.findOneAndUpdate({ role: req.query.role }, req.body, {
+  let role = await Roles.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
     useFindAndModify: false,

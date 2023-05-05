@@ -14,7 +14,7 @@ router
   .route("/roles/createRole")
   .post(isAuthenticated, authorizeRole("admin"), createRole);
 router
-  .route("/roles/updateRole")
+  .route("/roles/updateRole/:id")
   .put(isAuthenticated, authorizeRole("admin"), updateRole);
 router
   .route("/roles/getSingleRole/:id")
