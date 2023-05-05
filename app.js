@@ -3,6 +3,7 @@ const app = express();
 const product = require("./routes/productRoute");
 const user = require("./routes/userRoute");
 const roles = require("./routes/rolesRoute");
+const tax = require("./routes/taxRoutes");
 const order = require("./routes/orderRoute");
 const payment = require("./routes/paymentRoute");
 const errorMiddleWare = require("./middleware/error");
@@ -24,6 +25,7 @@ app.get("/", (req, res) => {
   res.status(200).json("app is running perfectly on cyclic");
 });
 app.use("/api/v1", roles);
+app.use("/api/v1", tax);
 app.use("/api/v1", product);
 app.use("/api/v1", user);
 app.use("/api/v1", order);
@@ -60,6 +62,7 @@ let allRoutes = [];
 routes.map(({ path, method }) => {
   if (
     !path.startsWith("/roles") &&
+    !path.startsWith("/tax") &&
     !path.startsWith("/auth") &&
     !path.startsWith("/products/getallproducts") &&
     !path.startsWith("/products/getProductDetail")

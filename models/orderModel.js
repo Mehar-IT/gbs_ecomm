@@ -10,7 +10,7 @@ const orderSchema = new mongoose.Schema(
       state: { type: String, required: true },
       country: { type: String, required: true },
       pinCode: { type: Number, required: true },
-      phoneNumber: { type: Number, require: true },
+      phoneNumber: { type: Number, required: true },
     },
 
     orderItems: [
@@ -21,11 +21,11 @@ const orderSchema = new mongoose.Schema(
         },
         quantity: {
           type: Number,
-          require: true,
+          required: true,
         },
         price: {
           type: Number,
-          require: true,
+          required: true,
         },
         image: { type: String, required: true },
         product: {
@@ -59,16 +59,16 @@ const orderSchema = new mongoose.Schema(
       default: 0,
       required: true,
     },
-    taxPrice: {
-      type: Number,
-      default: 0,
-      required: true,
-    },
-    shippingPrice: {
-      type: Number,
-      default: 0,
-      required: true,
-    },
+    // taxPrice: {
+    //   type: Number,
+    //   default: 0,
+    //   required: true,
+    // },
+    // shippingPrice: {
+    //   type: Number,
+    //   default: 0,
+    //   required: true,
+    // },
     totalPrice: {
       type: Number,
       default: 0,
