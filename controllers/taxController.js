@@ -4,7 +4,6 @@ const asyncErrorHandler = require("../middleware/asyncErrorHandler"); // Update 
 
 exports.createTax = asyncErrorHandler(async (req, res, next) => {
   const { country, taxPrice, shippingPrice } = req.body;
-  console.log(country);
 
   const tax = await Tax.create({ country, taxPrice, shippingPrice });
   res.status(201).json({

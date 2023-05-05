@@ -24,7 +24,7 @@ router
   .route("/tax/getSingleTaxByCountry/:country")
   .get(isAuthenticated, authorizeRole("admin"), getSingleTaxByCountry);
 router
-  .route("/tax/getAllTaxs")
+  .route("/tax/getAllTaxes")
   .get(isAuthenticated, authorizeRole("admin"), getAllTaxes);
 router
   .route("/tax/deleteTax/:id")
