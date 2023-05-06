@@ -3,9 +3,9 @@ const ErrorHandler = require("../utils/errorhandlers");
 const asyncErrorHandler = require("../middleware/asyncErrorHandler"); // Update with the actual path to the roles data file
 
 exports.createTax = asyncErrorHandler(async (req, res, next) => {
-  const { country, taxPrice, shippingPrice } = req.body;
+  const { country, nationShipping, worldShipping } = req.body;
 
-  const tax = await Tax.create({ country, taxPrice, shippingPrice });
+  const tax = await Tax.create({ country, nationShipping, worldShipping });
   res.status(201).json({
     success: true,
     tax,

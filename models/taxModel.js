@@ -7,14 +7,24 @@ const TaxSchema = new mongoose.Schema(
       unique: true,
       required: true,
     },
-    taxPrice: {
+    nationShipping: {
       type: Number,
-      default: 0,
+      unique: true,
+      required: true,
     },
-    shippingPrice: {
+    worldShipping: {
       type: Number,
-      default: 0,
+      unique: true,
+      required: true,
     },
+    // taxPrice: {
+    //   type: Number,
+    //   default: 0,
+    // },
+    // shippingPrice: {
+    //   type: Number,
+    //   default: 0,
+    // },
   },
   { timestamps: true }
 );

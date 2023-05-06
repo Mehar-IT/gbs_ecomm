@@ -64,11 +64,11 @@ const orderSchema = new mongoose.Schema(
     //   default: 0,
     //   required: true,
     // },
-    // shippingPrice: {
-    //   type: Number,
-    //   default: 0,
-    //   required: true,
-    // },
+    shippingPrice: {
+      type: Number,
+      default: 0,
+      required: true,
+    },
     totalPrice: {
       type: Number,
       default: 0,
