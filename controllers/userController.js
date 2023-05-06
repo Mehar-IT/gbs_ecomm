@@ -8,11 +8,12 @@ const cloudinary = require("cloudinary");
 // const http = require("http");
 
 exports.registerUser = asyncErrorHandler(async (req, res, next) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, userName } = req.body;
   const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
 
   const user = await User({
     name,
+    userName,
     email,
     password,
     userIP: ip,
@@ -48,19 +49,25 @@ exports.registerUser = asyncErrorHandler(async (req, res, next) => {
 });
 
 exports.loginUser = asyncErrorHandler(async (req, res, next) => {
-  const { email, password } = req.body;
-  if (!email || !password) {
-    return next(new ErrorHandler("Please enter email and password", 400));
+  const { password, userName } = req.body;
+
+  if (!userName || !password) {
+    return next(
+      new ErrorHandler("please enter email/userName and password", 400)
+    );
   }
-  const user = await User.findOne({ email }).select("+password");
+
+  let user = await User.findOne({
+    $or: [{ email: userName }, { userName: userName }],
+  }).select("+password");
 
   if (!user) {
-    return next(new ErrorHandler("Invalid email and password", 401));
+    return next(new ErrorHandler("Invalid email/userName and password", 401));
   }
   const isPasswordMatch = await user.comparePassowrd(password);
 
   if (!isPasswordMatch) {
-    return next(new ErrorHandler("Invalid email and password", 401));
+    return next(new ErrorHandler("Invalid email/userName and password", 401));
   }
 
   if (!user.isVerified) {
@@ -71,14 +78,14 @@ exports.loginUser = asyncErrorHandler(async (req, res, next) => {
 
     try {
       await sendEmail({
-        email,
+        email: user.email,
         subject: `Ecommerce Porject OTP `,
         message,
       });
 
       return res.status(201).json({
         success: true,
-        message: `you are not Verified your email!!! OPT is sent to ${email} successfully`,
+        message: `you are not Verified your email!!! OPT is sent to ${user.email} successfully`,
       });
     } catch (error) {
       user.otpToken = undefined;
@@ -209,7 +216,7 @@ exports.updatePassword = asyncErrorHandler(async (req, res, next) => {
 });
 
 exports.updateUserProfile = asyncErrorHandler(async (req, res) => {
-  const newUserData = { name: req.body.name };
+  const newUserData = { name: req.body.name, userName: req.body.userName };
 
   if (req.body.avatar !== "" && req.body.avatar !== undefined) {
     const user = await User.findById(req.user.id);
@@ -264,6 +271,7 @@ exports.updateUserByAdmin = asyncErrorHandler(async (req, res, next) => {
   const newUserData = {
     name: req.body.name,
     role: req.body.role,
+    userName: req.body.userName,
   };
 
   const user = await User.findByIdAndUpdate(req.params.id, newUserData, {
