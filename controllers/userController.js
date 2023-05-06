@@ -191,7 +191,12 @@ exports.resetPassword = asyncErrorHandler(async (req, res, next) => {
 });
 
 exports.getUserDetails = asyncErrorHandler(async (req, res, next) => {
-  const user = await User.findById(req.user.id);
+  let user;
+  if (req.user.role === "admin") {
+    user = await User.findById(req.user.id).select("+userIP");
+  } else {
+    user = await User.findById(req.user.id);
+  }
 
   res.status(200).json({
     success: true,
@@ -245,7 +250,7 @@ exports.updateUserProfile = asyncErrorHandler(async (req, res) => {
 });
 
 exports.getAllUsers = asyncErrorHandler(async (req, res, next) => {
-  const users = await User.find();
+  const users = await User.find().select("+userIP");
   res.status(200).json({
     success: true,
     users,
