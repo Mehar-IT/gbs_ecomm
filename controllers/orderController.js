@@ -14,7 +14,7 @@ exports.newOrder = asyncErrorHandler(async (req, res) => {
     itemsPrice,
     // taxPrice,
     shippingPrice,
-    totalPrice,
+    // totalPrice,
   } = req.body;
 
   // if (!shippingInfo.country) {
@@ -25,7 +25,7 @@ exports.newOrder = asyncErrorHandler(async (req, res) => {
   //   return new ErrorHandler("tax not found with your country", 404);
   // }
 
-  totalPrice = itemsPrice + shippingPrice;
+  const totalPrice = itemsPrice + shippingPrice;
 
   const order = await Order.create({
     shippingInfo,
@@ -34,7 +34,7 @@ exports.newOrder = asyncErrorHandler(async (req, res) => {
     itemsPrice,
     // taxPrice,
     shippingPrice,
-    totalPrice,
+    totalPrice: totalPrice,
     vat: req.body?.vat,
     businessName: req.body?.businessName,
     businessAddress: req.body?.businessAddress,
