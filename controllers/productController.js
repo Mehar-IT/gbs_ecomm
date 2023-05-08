@@ -59,7 +59,7 @@ exports.getAllProducts = asyncErrorHandler(async (req, res) => {
 });
 
 exports.getAdminProducts = asyncErrorHandler(async (req, res, next) => {
-  const products = await Product.find();
+  const products = await Product.find().sort({ createdAt: -1 });
 
   res.status(200).json({
     success: true,
