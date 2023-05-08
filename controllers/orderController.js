@@ -79,7 +79,10 @@ exports.getSingleOrder = asyncErrorHandler(async (req, res, next) => {
 });
 
 exports.myOrders = asyncErrorHandler(async (req, res) => {
-  const orders = await Order.find({ user: req.user._id });
+  const orders = await Order.find({ user: req.user._id }).populate(
+    "user",
+    "name email"
+  );
 
   res.status(200).json({
     success: true,
@@ -88,7 +91,7 @@ exports.myOrders = asyncErrorHandler(async (req, res) => {
 });
 
 exports.getAllOrder = asyncErrorHandler(async (req, res) => {
-  const orders = await Order.find();
+  const orders = await Order.find().populate("user", "name email");
 
   let totalAmount = 0;
 
