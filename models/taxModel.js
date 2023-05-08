@@ -9,12 +9,10 @@ const TaxSchema = new mongoose.Schema(
     },
     nationShipping: {
       type: Number,
-      unique: true,
       required: true,
     },
     worldShipping: {
       type: Number,
-      unique: true,
       required: true,
     },
     // taxPrice: {
