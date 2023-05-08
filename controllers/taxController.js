@@ -69,7 +69,7 @@ exports.getSingleTaxByCountry = asyncErrorHandler(async (req, res, next) => {
 });
 
 exports.getAllTaxes = asyncErrorHandler(async (req, res, next) => {
-  const tax = await Tax.find();
+  const tax = await Tax.find().sort({ createdAt: -1 });
 
   res.status(200).json({
     success: true,
