@@ -17,12 +17,10 @@ router
 router
   .route("/tax/updateTax/:id")
   .put(isAuthenticated, authorizeRole("admin"), updateTax);
-router
-  .route("/tax/getSingleTax/:id")
-  .get(isAuthenticated, authorizeRole("admin"), getSingleTax);
+router.route("/tax/getSingleTax/:id").get(isAuthenticated, getSingleTax);
 router
   .route("/tax/getSingleTaxByCountry/:country")
-  .get(isAuthenticated, authorizeRole("admin"), getSingleTaxByCountry);
+  .get(isAuthenticated, getSingleTaxByCountry);
 router
   .route("/tax/getAllTaxes")
   .get(isAuthenticated, authorizeRole("admin"), getAllTaxes);
