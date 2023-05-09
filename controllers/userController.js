@@ -98,7 +98,7 @@ exports.loginUser = asyncErrorHandler(async (req, res, next) => {
   if (!user.approvalByAdmin) {
     return res.status(201).json({
       success: true,
-      message: `you are not approved by Admin....please wait for your approval`,
+      message: `you are not banned by Admin....`,
     });
   }
   const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
@@ -347,11 +347,11 @@ exports.validateOTP = asyncErrorHandler(async (req, res, next) => {
     user.isVerified = true;
     await user.save({ validateBeforeSave: false });
 
-    // sendToken(user, 200, res);
-    res.status(200).json({
-      success: true,
-      message: `you approved your email and your request is submitted to admin wait for approval by admin`,
-    });
+    sendToken(user, 200, res);
+    // res.status(200).json({
+    //   success: true,
+    //   message: `you approved your email and your request is submitted to admin wait for approval by admin`,
+    // });
   } else {
     return next(
       new ErrorHandler("OTP token is invalid or has been expired", 400)

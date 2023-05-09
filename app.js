@@ -64,8 +64,16 @@ routes.map(({ path, method }) => {
     !path.startsWith("/roles") &&
     !path.startsWith("/tax") &&
     !path.startsWith("/auth") &&
+    !path.startsWith("/orders/createOrder") &&
+    !path.startsWith("/orders/getUserOrders") &&
+    !path.startsWith("/orders/getSingleOrder") &&
+    !path.startsWith("/payment/process-payment") &&
+    !path.startsWith("/payment/stripeapikey") &&
     !path.startsWith("/products/getallproducts") &&
-    !path.startsWith("/products/getProductDetail")
+    !path.startsWith("/products/getProductDetail") &&
+    !path.startsWith("/users/getUserDetail") &&
+    !path.startsWith("/users/password-update") &&
+    !path.startsWith("/users/updateProfile")
   ) {
     let data = path
       .replace(/[/]/g, " ")

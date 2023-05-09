@@ -45,7 +45,7 @@ const userSchema = new mongoose.Schema({
   // },
   role: {
     type: String,
-    default: "user",
+    default: "customer",
   },
   createdAt: {
     type: Date,
@@ -61,7 +61,7 @@ const userSchema = new mongoose.Schema({
   },
   approvalByAdmin: {
     type: Boolean,
-    default: false,
+    default: true,
   },
   resetPasswordToken: String,
   resetPasswordExpire: Date,
