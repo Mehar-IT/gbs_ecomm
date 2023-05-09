@@ -7,7 +7,11 @@ const {
   updateOrder,
   deleteOrder,
 } = require("../controllers/orderController");
-const { isAuthenticated, authorizePermisions } = require("../middleware/auth");
+const {
+  isAuthenticated,
+  isAuthenticatedForEmployee,
+  authorizePermisions,
+} = require("../middleware/auth");
 
 const router = express.Router();
 
@@ -17,12 +21,12 @@ router.route("/orders/getUserOrders").get(isAuthenticated, myOrders);
 
 router
   .route("/orders/admin/getAllOrders")
-  .get(isAuthenticated, authorizePermisions, getAllOrder);
+  .get(isAuthenticatedForEmployee, authorizePermisions, getAllOrder);
 router
   .route("/orders/admin/updateOrder/:id")
-  .put(isAuthenticated, authorizePermisions, updateOrder);
+  .put(isAuthenticatedForEmployee, authorizePermisions, updateOrder);
 router
   .route("/orders/admin/deleteOrder/:id")
-  .delete(isAuthenticated, authorizePermisions, deleteOrder);
+  .delete(isAuthenticatedForEmployee, authorizePermisions, deleteOrder);
 
 module.exports = router;

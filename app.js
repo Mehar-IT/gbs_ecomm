@@ -4,6 +4,7 @@ const product = require("./routes/productRoute");
 const user = require("./routes/userRoute");
 const roles = require("./routes/rolesRoute");
 const tax = require("./routes/taxRoutes");
+const employee = require("./routes/employeeRoute");
 const order = require("./routes/orderRoute");
 const payment = require("./routes/paymentRoute");
 const errorMiddleWare = require("./middleware/error");
@@ -12,7 +13,10 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const fileUpload = require("express-fileupload");
-const { authorizeRole, isAuthenticated } = require("./middleware/auth");
+const {
+  isAuthenticatedForEmployee,
+  authorizePermisions,
+} = require("./middleware/auth");
 
 // app.set("trust proxy", true);
 app.use(cors({ credentials: true, origin: true }));
@@ -26,6 +30,7 @@ app.get("/", (req, res) => {
 });
 app.use("/api/v1", roles);
 app.use("/api/v1", tax);
+app.use("/api/v1", employee);
 app.use("/api/v1", product);
 app.use("/api/v1", user);
 app.use("/api/v1", order);
@@ -61,8 +66,8 @@ let allRoutes = [];
 
 routes.map(({ path, method }) => {
   if (
-    !path.startsWith("/roles") &&
-    !path.startsWith("/tax") &&
+    // !path.startsWith("/roles") &&
+    // !path.startsWith("/tax") &&
     !path.startsWith("/auth") &&
     !path.startsWith("/orders/createOrder") &&
     !path.startsWith("/orders/getUserOrders") &&
@@ -73,7 +78,11 @@ routes.map(({ path, method }) => {
     !path.startsWith("/products/getProductDetail") &&
     !path.startsWith("/users/getUserDetail") &&
     !path.startsWith("/users/password-update") &&
-    !path.startsWith("/users/updateProfile")
+    !path.startsWith("/users/updateProfile") &&
+    !path.startsWith("/employee/loginEmployee") &&
+    !path.startsWith("/tax/getSingleTax") &&
+    !path.startsWith("/tax/getAllTaxes") &&
+    !path.startsWith("/tax/getSingleTaxByCountry")
   ) {
     let data = path
       .replace(/[/]/g, " ")
@@ -91,8 +100,8 @@ routes.map(({ path, method }) => {
 
 app.get(
   "/api/v1/getAllEndPoints",
-  isAuthenticated,
-  authorizeRole("admin"),
+  isAuthenticatedForEmployee,
+  authorizePermisions,
   (req, res) => {
     res.status(200).json({ allRoutes, count: allRoutes.length });
   }

@@ -6,24 +6,27 @@ const {
   getSingleRole,
   getAllRoles,
 } = require("../controllers/roleController");
-const { isAuthenticated, authorizeRole } = require("../middleware/auth");
+const {
+  isAuthenticatedForEmployee,
+  authorizePermisions,
+} = require("../middleware/auth");
 
 const router = express.Router();
 
 router
   .route("/roles/createRole")
-  .post(isAuthenticated, authorizeRole("admin"), createRole);
+  .post(isAuthenticatedForEmployee, authorizePermisions, createRole);
 router
   .route("/roles/updateRole/:id")
-  .put(isAuthenticated, authorizeRole("admin"), updateRole);
+  .put(isAuthenticatedForEmployee, authorizePermisions, updateRole);
 router
   .route("/roles/getSingleRole/:id")
-  .get(isAuthenticated, authorizeRole("admin"), getSingleRole);
+  .get(isAuthenticatedForEmployee, authorizePermisions, getSingleRole);
 router
   .route("/roles/getAllRoles")
-  .get(isAuthenticated, authorizeRole("admin"), getAllRoles);
+  .get(isAuthenticatedForEmployee, authorizePermisions, getAllRoles);
 router
   .route("/roles/deleteRole/:id")
-  .delete(isAuthenticated, authorizeRole("admin"), deleteRole);
+  .delete(isAuthenticatedForEmployee, authorizePermisions, deleteRole);
 
 module.exports = router;

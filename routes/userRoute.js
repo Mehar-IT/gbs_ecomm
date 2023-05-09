@@ -16,7 +16,11 @@ const {
   resentOTP,
   approvalUserByAdmin,
 } = require("../controllers/userController");
-const { isAuthenticated, authorizePermisions } = require("../middleware/auth");
+const {
+  isAuthenticated,
+  authorizePermisions,
+  isAuthenticatedForEmployee,
+} = require("../middleware/auth");
 const router = express.Router();
 
 router.route("/auth/register").post(registerUser);
@@ -33,19 +37,19 @@ router.route("/users/updateProfile").put(isAuthenticated, updateUserProfile);
 
 router
   .route("/users/admin/getallusers")
-  .get(isAuthenticated, authorizePermisions, getAllUsers);
+  .get(isAuthenticatedForEmployee, authorizePermisions, getAllUsers);
 router
   .route("/users/admin/getSingleUser/:id")
-  .get(isAuthenticated, authorizePermisions, getsindleUserByAdmin);
+  .get(isAuthenticatedForEmployee, authorizePermisions, getsindleUserByAdmin);
 
 router
   .route("/users/admin/updateUser/:id")
-  .put(isAuthenticated, authorizePermisions, updateUserByAdmin);
+  .put(isAuthenticatedForEmployee, authorizePermisions, updateUserByAdmin);
 router
   .route("/users/admin/deleteUsers/:id")
-  .delete(isAuthenticated, authorizePermisions, deleteUserByAdmin);
+  .delete(isAuthenticatedForEmployee, authorizePermisions, deleteUserByAdmin);
 router
   .route("/users/admin/userApproval/:id")
-  .put(isAuthenticated, authorizePermisions, approvalUserByAdmin);
+  .put(isAuthenticatedForEmployee, authorizePermisions, approvalUserByAdmin);
 
 module.exports = router;

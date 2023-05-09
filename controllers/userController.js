@@ -49,16 +49,16 @@ exports.registerUser = asyncErrorHandler(async (req, res, next) => {
 });
 
 exports.loginUser = asyncErrorHandler(async (req, res, next) => {
-  const { password, userName } = req.body;
+  const { password, email } = req.body;
 
-  if (!userName || !password) {
+  if (!email || !password) {
     return next(
       new ErrorHandler("please enter email/userName and password", 400)
     );
   }
 
   let user = await User.findOne({
-    $or: [{ email: userName }, { userName: userName }],
+    $or: [{ email }, { userName: email }],
   }).select("+password");
 
   if (!user) {
@@ -98,7 +98,7 @@ exports.loginUser = asyncErrorHandler(async (req, res, next) => {
   if (!user.approvalByAdmin) {
     return res.status(201).json({
       success: true,
-      message: `you are not banned by Admin....`,
+      message: `you are banned by Admin....`,
     });
   }
   const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
