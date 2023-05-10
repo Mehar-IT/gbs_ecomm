@@ -106,28 +106,33 @@ exports.updateOrder = asyncErrorHandler(async (req, res, next) => {
     );
   }
 
-  if (req.body.status === "shipped") {
+  if (req.body.status.toLowerCase() === "shipped") {
     order.orderItems.forEach(async (order) => {
       await updateStock(
         order.product,
         order.quantity,
         order._id,
-        order.email,
-        req.body.status
+        order.user.email,
+        req.body.status.toLowerCase()
       );
     });
   }
 
-  order.orderStatus = req.body.status;
-  if (req.body.status === "delivered") {
+  order.orderStatus = req.body.status.toLowerCase();
+  if (req.body.status.toLowerCase() === "delivered") {
     order.deliveredAt = Date.now();
-    sendEmailOrder(req.body.status, order._id, order.email);
+    sendEmailOrder(
+      req.body.status.toLowerCase(),
+      order._id,
+      order.user.email,
+      next
+    );
   }
   await order.save({ validateBeforeSave: false });
 
   res.status(200).json({
     success: true,
-    message: `Email sent to ${order.email} successfully`,
+    message: `Email sent to ${order.user.email} successfully`,
   });
 });
 
@@ -135,10 +140,10 @@ async function updateStock(id, quantity, orderID, email, status) {
   const product = await Product.findById(id);
   product.stock -= quantity;
   await product.save({ validateBeforeSave: false });
-  sendEmailOrder(status, orderID, email);
+  sendEmailOrder(status, orderID, email, next);
 }
 
-async function sendEmailOrder(status, orderID, email) {
+async function sendEmailOrder(status, orderID, email, next) {
   const message = `your Order is ${status} against order id ${orderID}`;
   try {
     await sendEmail({
