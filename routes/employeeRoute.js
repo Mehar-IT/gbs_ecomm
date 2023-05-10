@@ -21,6 +21,7 @@ router.route("/employee/loginEmployee").post(loginEmployee);
 router
   .route("/employee/registerEmployee")
   .post(isAuthenticatedForEmployee, authorizePermisions, registerEmployee);
+
 router
   .route("/employee/getEmployeeDetails")
   .get(isAuthenticatedForEmployee, getEmployeeDetails);

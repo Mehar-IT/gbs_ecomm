@@ -54,8 +54,19 @@ exports.loginEmployee = asyncErrorHandler(async (req, res, next) => {
 });
 
 exports.getEmployeeDetails = asyncErrorHandler(async (req, res, next) => {
-  const employee = await Employee.findById(req.user.id);
+  let employee;
+  if (req.user.role === "superAdmin") {
+    employee = await Employee.findOne({ _id: req.user.id });
+  } else {
+    employee = await Employee.findOne({
+      _id: req.user.id,
+      role: { $ne: "superAdmin" },
+    });
+  }
 
+  if (!employee) {
+    return next("Employee not found with this Id", 404);
+  }
   res.status(200).json({
     success: true,
     employee,
@@ -81,7 +92,12 @@ exports.updateEmployeeProfile = asyncErrorHandler(async (req, res) => {
 });
 
 exports.getAllEmployees = asyncErrorHandler(async (req, res, next) => {
-  const employees = await Employee.find();
+  let employees;
+  if (req.user.role === "superAdmin") {
+    employees = await Employee.find();
+  } else {
+    employees = await Employee.find({ role: { $ne: "superAdmin" } });
+  }
   res.status(200).json({
     success: true,
     employees,
@@ -89,7 +105,15 @@ exports.getAllEmployees = asyncErrorHandler(async (req, res, next) => {
 });
 
 exports.getsindleEmployeeByAdmin = asyncErrorHandler(async (req, res, next) => {
-  const employee = await Employee.findById(req.params.id);
+  let employee;
+  if (req.user.role === "superAdmin") {
+    employee = await Employee.findOne({ _id: req.params.id });
+  } else {
+    employee = await Employee.findOne({
+      _id: req.params.id,
+      role: { $ne: "superAdmin" },
+    });
+  }
 
   if (!employee) {
     return next(
@@ -111,15 +135,29 @@ exports.updateEmployeeByAdmin = asyncErrorHandler(async (req, res, next) => {
     password: req.body.password,
   };
 
-  const employee = await Employee.findByIdAndUpdate(
-    req.params.id,
-    newUserData,
-    {
-      new: true,
-      runValidators: true,
-      userFindandModify: false,
-    }
-  );
+  let employee;
+
+  if (req.user.role === "superAdmin") {
+    employee = await Employee.findOneAndUpdate(
+      { _id: req.params.id },
+      newUserData,
+      {
+        new: true,
+        runValidators: true,
+        userFindandModify: false,
+      }
+    );
+  } else {
+    employee = await Employee.findOneAndUpdate(
+      { _id: req.params.id, role: { $ne: "superAdmin" } },
+      newUserData,
+      {
+        new: true,
+        runValidators: true,
+        userFindandModify: false,
+      }
+    );
+  }
 
   if (!employee) {
     return next(
@@ -133,7 +171,15 @@ exports.updateEmployeeByAdmin = asyncErrorHandler(async (req, res, next) => {
 });
 
 exports.deleteEmployeeByAdmin = asyncErrorHandler(async (req, res, next) => {
-  const employee = await Employee.findByIdAndDelete(req.params.id);
+  let employee;
+  if (req.user.role === "superAdmin") {
+    employee = await Employee.findOneAndDelete({ _id: req.params.id });
+  } else {
+    employee = await Employee.findOneAndDelete({
+      _id: req.params.id,
+      role: { $ne: "superAdmin" },
+    });
+  }
 
   if (!employee) {
     return next(
@@ -150,15 +196,30 @@ exports.deleteEmployeeByAdmin = asyncErrorHandler(async (req, res, next) => {
 exports.approvalEmployeeByAdmin = asyncErrorHandler(async (req, res, next) => {
   const { approvalByAdmin } = req.body;
 
-  const employee = await Employee.findByIdAndUpdate(
-    req.params.id,
-    { approvalByAdmin },
-    {
-      new: true,
-      runValidators: true,
-      userFindandModify: false,
-    }
-  );
+  let employee;
+
+  if (req.user.role === "superAdmin") {
+    employee = await Employee.findOneAndUpdate(
+      { _id: req.params.id },
+      { approvalByAdmin },
+      {
+        new: true,
+        runValidators: true,
+        userFindandModify: false,
+      }
+    );
+  } else {
+    employee = await Employee.findOneAndUpdate(
+      { _id: req.params.id, role: { $ne: "superAdmin" } },
+      { approvalByAdmin },
+      {
+        new: true,
+        runValidators: true,
+        userFindandModify: false,
+      }
+    );
+  }
+
   if (!employee) {
     return next(
       new ErrorHandler(`employee not found with id ${req.params.id}`, 404)
