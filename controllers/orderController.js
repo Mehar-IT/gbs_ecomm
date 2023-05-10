@@ -6,24 +6,9 @@ const asyncErrorHandler = require("../middleware/asyncErrorHandler");
 const sendEmail = require("../utils/sendEmail");
 // const Tax = require("../models/taxModel");
 
-exports.newOrder = asyncErrorHandler(async (req, res) => {
-  const {
-    shippingInfo,
-    orderItems,
-    paymentInfo,
-    itemsPrice,
-    // taxPrice,
-    shippingPrice,
-    // totalPrice,
-  } = req.body;
-
-  // if (!shippingInfo.country) {
-  //   return new ErrorHandler("enter country first", 400);
-  // }
-  // const tax = await Tax.findOne({ country: shippingInfo.country });
-  // if (!tax) {
-  //   return new ErrorHandler("tax not found with your country", 404);
-  // }
+exports.newOrder = asyncErrorHandler(async (req, res, next) => {
+  const { shippingInfo, orderItems, paymentInfo, itemsPrice, shippingPrice } =
+    req.body;
 
   const totalPrice = itemsPrice + shippingPrice;
 
@@ -32,7 +17,6 @@ exports.newOrder = asyncErrorHandler(async (req, res) => {
     orderItems,
     paymentInfo,
     itemsPrice,
-    // taxPrice,
     shippingPrice,
     totalPrice: totalPrice,
     vat: req.body?.vat,
