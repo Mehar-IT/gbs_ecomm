@@ -6,6 +6,7 @@ const {
   deleteProduct,
   getProductDetail,
   getAdminProducts,
+  getProductCategories,
 } = require("../controllers/productController");
 const {
   isAuthenticatedForEmployee,
@@ -16,6 +17,7 @@ const router = express.Router();
 
 router.route("/products/getallproducts").get(getAllProducts);
 router.route("/products/getProductDetail/:id").get(getProductDetail);
+router.route("/products/getProductCategories").get(getProductCategories);
 
 router
   .route("/products/admin/createProduct")

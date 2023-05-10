@@ -142,6 +142,22 @@ exports.getProductDetail = asyncErrorHandler(async (req, res, next) => {
   });
 });
 
+exports.getProductCategories = asyncErrorHandler(async (req, res, next) => {
+  const products = await Product.find();
+
+  if (products.length === 0) {
+    return next(new ErrorHandler("Product not found", 404));
+  }
+
+  let categories = products.map((product) => product.category.toLowerCase());
+  categories = [...new Set(categories)];
+
+  res.status(200).json({
+    success: true,
+    categories,
+  });
+});
+
 // exports.createProductReview = asyncErrorHandler(async (req, res, next) => {
 //   const { rating, comment, productId } = req.body;
 //   const review = {

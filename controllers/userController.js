@@ -275,7 +275,7 @@ exports.getsindleUserByAdmin = asyncErrorHandler(async (req, res, next) => {
 exports.updateUserByAdmin = asyncErrorHandler(async (req, res, next) => {
   const newUserData = {
     name: req.body.name,
-    role: req.body.role,
+    // role: req.body.role,
     userName: req.body.userName,
   };
 

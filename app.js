@@ -76,6 +76,7 @@ routes.map(({ path, method }) => {
     !path.startsWith("/payment/stripeapikey") &&
     !path.startsWith("/products/getallproducts") &&
     !path.startsWith("/products/getProductDetail") &&
+    !path.startsWith("/products/getProductCategories") &&
     !path.startsWith("/users/getUserDetail") &&
     !path.startsWith("/users/password-update") &&
     !path.startsWith("/users/updateProfile") &&
