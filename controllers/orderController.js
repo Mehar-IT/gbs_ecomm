@@ -167,3 +167,33 @@ exports.deleteOrder = asyncErrorHandler(async (req, res, next) => {
     success: true,
   });
 });
+
+exports.getFilteredOrder = asyncErrorHandler(async (req, res, next) => {
+  const { orderedAt } = req.query;
+
+  const [year, month, day] = orderedAt.split("-").map(Number);
+
+  let soldItems = 0;
+  let totalRevenue = 0;
+  Order.find({
+    orderStatus: "delivered",
+    updatedAt: {
+      $lte: new Date(`${year}-${month}-${day + 1}`),
+    },
+  })
+    .then((orders) => {
+      orders.forEach((order) => {
+        totalRevenue = totalRevenue + order.itemsPrice;
+        order.orderItems.forEach((item) => {
+          soldItems = soldItems + item.quantity;
+        });
+      });
+
+      res.status(200).json({
+        success: true,
+        soldItems,
+        totalRevenue,
+      });
+    })
+    .catch((err) => next(new ErrorHandler(err.message, 500)));
+});

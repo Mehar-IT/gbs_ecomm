@@ -33,7 +33,6 @@ const employeeSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    unique: true,
     required: [true, "Role is required"],
   },
   approvalByAdmin: {

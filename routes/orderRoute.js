@@ -6,6 +6,7 @@ const {
   getAllOrder,
   updateOrder,
   deleteOrder,
+  getFilteredOrder,
 } = require("../controllers/orderController");
 const {
   isAuthenticated,
@@ -22,6 +23,9 @@ router.route("/orders/getUserOrders").get(isAuthenticated, myOrders);
 router
   .route("/orders/admin/getAllOrders")
   .get(isAuthenticatedForEmployee, authorizePermisions, getAllOrder);
+router
+  .route("/orders/admin/getFilteredOrder")
+  .get(isAuthenticatedForEmployee, authorizePermisions, getFilteredOrder);
 router
   .route("/orders/admin/updateOrder/:id")
   .put(isAuthenticatedForEmployee, authorizePermisions, updateOrder);
