@@ -189,6 +189,10 @@ exports.getFilteredOrder = asyncErrorHandler(async (req, res, next) => {
       $lte: new Date(`${year}-${month}-${orderedAt ? day + 2 : day + 1}`),
     },
   })
+    .populate({
+      path: "user",
+      select: "name email",
+    })
     .then((orders) => {
       orders.forEach((order) => {
         totalRevenue = totalRevenue + order.itemsPrice;
