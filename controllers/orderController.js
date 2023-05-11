@@ -169,16 +169,19 @@ exports.deleteOrder = asyncErrorHandler(async (req, res, next) => {
 });
 
 exports.getFilteredOrder = asyncErrorHandler(async (req, res, next) => {
-  const { orderedAt } = req.query;
+  let { orderedAt } = req.query;
 
-  const [year, month, day] = orderedAt.split("-").map(Number);
+  orderedAt = orderedAt ? new Date(orderedAt) : new Date();
+
+  const dateStr = orderedAt.toISOString().slice(0, 10);
+  const [year, month, day] = dateStr.split("-").map(Number);
 
   let soldItems = 0;
   let totalRevenue = 0;
   Order.find({
     orderStatus: "delivered",
     updatedAt: {
-      $lte: new Date(`${year}-${month}-${day + 1}`),
+      $lte: new Date(`${year}-${month}-${orderedAt ? day + 2 : day + 1}`),
     },
   })
     .then((orders) => {
