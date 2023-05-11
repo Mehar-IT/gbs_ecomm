@@ -196,6 +196,7 @@ exports.getFilteredOrder = asyncErrorHandler(async (req, res, next) => {
         success: true,
         soldItems,
         totalRevenue,
+        orders,
       });
     })
     .catch((err) => next(new ErrorHandler(err.message, 500)));
