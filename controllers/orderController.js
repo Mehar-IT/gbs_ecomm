@@ -172,7 +172,11 @@ exports.getFilteredOrder = asyncErrorHandler(async (req, res, next) => {
   let { orderedAt, orderStatus } = req.query;
 
   orderedAt = orderedAt ? new Date(orderedAt) : new Date();
-  orderStatus = orderStatus ?? "delivered";
+  if (!orderStatus) {
+    orderStatus = "delivered";
+  } else if (orderStatus === "all") {
+    orderStatus = "";
+  }
 
   const dateStr = orderedAt.toISOString().slice(0, 10);
   const [year, month, day] = dateStr.split("-").map(Number);
@@ -180,7 +184,7 @@ exports.getFilteredOrder = asyncErrorHandler(async (req, res, next) => {
   let soldItems = 0;
   let totalRevenue = 0;
   Order.find({
-    orderStatus: orderStatus.toLowerCase(),
+    orderStatus: { $regex: orderStatus, $options: "i" },
     updatedAt: {
       $lte: new Date(`${year}-${month}-${orderedAt ? day + 2 : day + 1}`),
     },
