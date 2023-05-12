@@ -136,7 +136,7 @@ exports.updateOrder = asyncErrorHandler(async (req, res, next) => {
   });
 });
 
-async function updateStock(id, quantity, orderID, email, status) {
+async function updateStock(id, quantity, orderID, email, status, next) {
   const product = await Product.findById(id);
   product.stock -= quantity;
   await product.save({ validateBeforeSave: false });

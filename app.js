@@ -7,6 +7,7 @@ const tax = require("./routes/taxRoutes");
 const employee = require("./routes/employeeRoute");
 const order = require("./routes/orderRoute");
 const payment = require("./routes/paymentRoute");
+const category = require("./routes/categoryRoute");
 const errorMiddleWare = require("./middleware/error");
 const notFoundError = require("./middleware/404");
 const cookieParser = require("cookie-parser");
@@ -35,6 +36,7 @@ app.use("/api/v1", product);
 app.use("/api/v1", user);
 app.use("/api/v1", order);
 app.use("/api/v1", payment);
+app.use("/api/v1", category);
 
 const routes = [];
 app._router.stack.forEach((middleware) => {
