@@ -4,7 +4,7 @@ const Product = require("../models/productModel");
 const ErrorHandler = require("../utils/errorhandlers");
 const asyncErrorHandler = require("../middleware/asyncErrorHandler");
 const sendEmail = require("../utils/sendEmail");
-// const Tax = require("../models/taxModel");
+const ApiFeature = require("../utils/apiFeature");
 
 exports.newOrder = asyncErrorHandler(async (req, res, next) => {
   const { shippingInfo, orderItems, paymentInfo, itemsPrice, shippingPrice } =
@@ -169,44 +169,22 @@ exports.deleteOrder = asyncErrorHandler(async (req, res, next) => {
 });
 
 exports.getFilteredOrder = asyncErrorHandler(async (req, res, next) => {
-  let { orderedAt, orderStatus } = req.query;
-
-  orderedAt = orderedAt ? new Date(orderedAt) : new Date();
-  if (!orderStatus) {
-    orderStatus = "delivered";
-  } else if (orderStatus === "all") {
-    orderStatus = "";
-  }
-
-  const dateStr = orderedAt.toISOString().slice(0, 10);
-  const [year, month, day] = dateStr.split("-").map(Number);
+  const apifeature = new ApiFeature(Order.find(), req.query).order().filter();
+  let orders = await apifeature.query.populate("user", "email name");
 
   let soldItems = 0;
   let totalRevenue = 0;
-  Order.find({
-    orderStatus: { $regex: orderStatus, $options: "i" },
-    updatedAt: {
-      $lte: new Date(`${year}-${month}-${orderedAt ? day + 2 : day + 1}`),
-    },
-  })
-    .populate({
-      path: "user",
-      select: "name email",
-    })
-    .then((orders) => {
-      orders.forEach((order) => {
-        totalRevenue = totalRevenue + order.itemsPrice;
-        order.orderItems.forEach((item) => {
-          soldItems = soldItems + item.quantity;
-        });
-      });
+  orders.forEach((order) => {
+    totalRevenue = totalRevenue + order.itemsPrice;
+    order.orderItems.forEach((item) => {
+      soldItems = soldItems + item.quantity;
+    });
+  });
 
-      res.status(200).json({
-        success: true,
-        soldItems,
-        totalRevenue,
-        orders,
-      });
-    })
-    .catch((err) => next(new ErrorHandler(err.message, 500)));
+  res.status(200).json({
+    success: true,
+    soldItems,
+    totalRevenue,
+    orders,
+  });
 });

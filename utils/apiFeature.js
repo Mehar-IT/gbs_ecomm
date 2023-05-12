@@ -18,10 +18,24 @@ class ApiFeature {
     return this;
   }
 
+  order() {
+    const orderStatus = this.queryStr.orderStatus
+      ? {
+          orderStatus: {
+            $regex: this.queryStr.orderStatus,
+            $options: "i",
+          },
+        }
+      : {};
+
+    this.query = this.query.find({ ...orderStatus }).sort({ createdAt: -1 });
+    return this;
+  }
+
   filter() {
     const queryCopy = { ...this.queryStr };
 
-    const removeFields = ["keyword", "page", "limit"];
+    const removeFields = ["keyword", "page", "limit", "orderStatus"];
     removeFields.forEach((key) => delete queryCopy[key]);
 
     let queryStr = JSON.stringify(queryCopy);
