@@ -4,7 +4,6 @@ const categorySchema = new mongoose.Schema(
   {
     category: {
       type: String,
-      default: "uncategorized",
       unique: true,
       trim: true,
     },

@@ -44,7 +44,7 @@ exports.getAllProducts = asyncErrorHandler(async (req, res) => {
   const apifeature = new ApiFeature(Product.find(), req.query)
     .search()
     .filter();
-  let products = await apifeature.query;
+  let products = await apifeature.query.populate("category", "category");
   let filteredProductsCount = products.length;
   // apifeature.pagination(resultPerPage);
   // products = await apifeature.query.clone();
@@ -59,7 +59,9 @@ exports.getAllProducts = asyncErrorHandler(async (req, res) => {
 });
 
 exports.getAdminProducts = asyncErrorHandler(async (req, res, next) => {
-  const products = await Product.find().sort({ createdAt: -1 });
+  const products = await Product.find()
+    .populate("category", "category")
+    .sort({ createdAt: -1 });
 
   res.status(200).json({
     success: true,
@@ -122,7 +124,7 @@ exports.deleteProduct = asyncErrorHandler(async (req, res, next) => {
   for (let i = 0; i < product.images.length; i++) {
     await cloudinary.v2.uploader.destroy(product.images[i].public_id);
   }
-  // await product.remove();
+
   res.status(200).json({
     success: true,
     message: "product is deleted",
@@ -130,7 +132,10 @@ exports.deleteProduct = asyncErrorHandler(async (req, res, next) => {
 });
 
 exports.getProductDetail = asyncErrorHandler(async (req, res, next) => {
-  const product = await Product.findById(req.params.id);
+  const product = await Product.findById(req.params.id).populate(
+    "category",
+    "category"
+  );
 
   if (!product) {
     return next(new ErrorHandler("Product not found", 404));
@@ -143,13 +148,14 @@ exports.getProductDetail = asyncErrorHandler(async (req, res, next) => {
 });
 
 exports.getProductCategories = asyncErrorHandler(async (req, res, next) => {
-  const products = await Product.find();
-
+  const products = await Product.find().populate("category", "category");
   if (products.length === 0) {
     return next(new ErrorHandler("Product not found", 404));
   }
 
-  let categories = products.map((product) => product.category.toLowerCase());
+  let categories = products.map((product) =>
+    product.category.category.toLowerCase()
+  );
   categories = [...new Set(categories)];
 
   res.status(200).json({
