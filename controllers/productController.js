@@ -3,6 +3,7 @@ const ErrorHandler = require("../utils/errorhandlers");
 const asyncErrorHandler = require("../middleware/asyncErrorHandler");
 const ApiFeature = require("../utils/apiFeature");
 const cloudinary = require("cloudinary");
+const { Types } = require("mongoose");
 
 exports.createProduct = asyncErrorHandler(async (req, res, next) => {
   let images = [];
@@ -30,6 +31,7 @@ exports.createProduct = asyncErrorHandler(async (req, res, next) => {
 
   req.body.images = imagesLink;
   req.body.user = req.user.id;
+  req.body.category = Types.ObjectId(req.body.category);
 
   const product = await Product.create(req.body);
   res.status(201).json({

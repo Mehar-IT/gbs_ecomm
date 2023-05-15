@@ -21,6 +21,9 @@ router.route("/orders/getSingleOrder/:id").get(isAuthenticated, getSingleOrder);
 router.route("/orders/getUserOrders").get(isAuthenticated, myOrders);
 
 router
+  .route("/orders/getSingleOrderByAdmin/:id")
+  .get(isAuthenticated, getSingleOrder);
+router
   .route("/orders/admin/getAllOrders")
   .get(isAuthenticatedForEmployee, authorizePermisions, getAllOrder);
 router
