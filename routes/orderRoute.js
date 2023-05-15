@@ -22,7 +22,7 @@ router.route("/orders/getUserOrders").get(isAuthenticated, myOrders);
 
 router
   .route("/orders/getSingleOrderByAdmin/:id")
-  .get(isAuthenticated, getSingleOrder);
+  .get(isAuthenticatedForEmployee, authorizePermisions, getSingleOrder);
 router
   .route("/orders/admin/getAllOrders")
   .get(isAuthenticatedForEmployee, authorizePermisions, getAllOrder);
