@@ -46,7 +46,20 @@ exports.getAllProducts = asyncErrorHandler(async (req, res) => {
   const apifeature = new ApiFeature(Product.find(), req.query)
     .search()
     .filter();
-  let products = await apifeature.query.populate("category", "category");
+  let items = await apifeature.query.populate({
+    path: "category",
+    select: "category",
+    match: {
+      category: { $regex: `${req.query.category ?? ""}`, $options: "i" },
+    },
+    options: { sort: { createdAt: -1 } },
+  });
+  const products = [];
+  items.map((item) => {
+    if (item.category) {
+      products.push(item);
+    }
+  });
   let filteredProductsCount = products.length;
   // apifeature.pagination(resultPerPage);
   // products = await apifeature.query.clone();
