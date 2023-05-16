@@ -25,6 +25,8 @@ router
 router
   .route("/roles/getAllRoles")
   .get(isAuthenticatedForEmployee, authorizePermisions, getAllRoles);
+router.route("/roles/getAllRolesForPublic").get(getAllRoles);
+
 router
   .route("/roles/deleteRole/:id")
   .delete(isAuthenticatedForEmployee, authorizePermisions, deleteRole);
