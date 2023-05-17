@@ -2,11 +2,6 @@ const mongoose = require("mongoose");
 
 const accountSchema = new mongoose.Schema(
   {
-    category: {
-      type: String,
-      unique: true,
-      trim: true,
-    },
     accTitle: {
       type: String,
       required: true,
