@@ -22,11 +22,11 @@ router
 
 router
   .route("/category/getCategoryDetails/:id")
-  .get(isAuthenticatedForEmployee, getCategoryDetails);
+  .get(isAuthenticatedForEmployee, authorizePermisions, getCategoryDetails);
 
 router
   .route("/category/updateCategory/:id")
-  .put(isAuthenticatedForEmployee, updateCategory);
+  .put(isAuthenticatedForEmployee, authorizePermisions, updateCategory);
 
 router
   .route("/category/deleteCategory/:id")

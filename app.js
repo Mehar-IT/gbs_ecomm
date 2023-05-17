@@ -5,6 +5,7 @@ const user = require("./routes/userRoute");
 const roles = require("./routes/rolesRoute");
 const tax = require("./routes/taxRoutes");
 const employee = require("./routes/employeeRoute");
+const account = require("./routes/accountRoute");
 const order = require("./routes/orderRoute");
 const payment = require("./routes/paymentRoute");
 const category = require("./routes/categoryRoute");
@@ -37,6 +38,7 @@ app.use("/api/v1", user);
 app.use("/api/v1", order);
 app.use("/api/v1", payment);
 app.use("/api/v1", category);
+app.use("/api/v1", account);
 
 const routes = [];
 app._router.stack.forEach((middleware) => {
@@ -85,7 +87,8 @@ routes.map(({ path, method }) => {
     !path.startsWith("/employee/loginEmployee") &&
     !path.startsWith("/tax/getSingleTax") &&
     !path.startsWith("/tax/getAllTaxes") &&
-    !path.startsWith("/tax/getSingleTaxByCountry")
+    !path.startsWith("/tax/getSingleTaxByCountry") &&
+    !path.startsWith("/account/get")
   ) {
     let data = path
       .replace(/[/]/g, " ")
