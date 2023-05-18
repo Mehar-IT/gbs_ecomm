@@ -108,14 +108,14 @@ exports.updateOrder = asyncErrorHandler(async (req, res, next) => {
 
   if (req.body.status.toLowerCase() === "shipped") {
     order.orderItems.forEach(async (order) => {
-      await updateStock(
-        order.product,
-        order.quantity,
-        order._id,
-        order.user.email,
-        req.body.status.toLowerCase()
-      );
+      await updateStock(order.product, order.quantity);
     });
+    sendEmailOrder(
+      req.body.status.toLowerCase(),
+      order._id,
+      order.user.email,
+      next
+    );
   }
 
   order.orderStatus = req.body.status.toLowerCase();
@@ -136,11 +136,10 @@ exports.updateOrder = asyncErrorHandler(async (req, res, next) => {
   });
 });
 
-async function updateStock(id, quantity, orderID, email, status, next) {
+async function updateStock(id, quantity) {
   const product = await Product.findById(id);
   product.stock -= quantity;
   await product.save({ validateBeforeSave: false });
-  sendEmailOrder(status, orderID, email, next);
 }
 
 async function sendEmailOrder(status, orderID, email, next) {
