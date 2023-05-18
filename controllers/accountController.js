@@ -12,7 +12,6 @@ exports.createAccount = asyncErrorHandler(async (req, res, next) => {
     swiftCode,
     bankAddress,
     routingNumber,
-    employee: req.user.id,
   });
 
   await account.save({ validateBeforeSave: true });

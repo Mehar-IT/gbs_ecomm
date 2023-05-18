@@ -26,11 +26,6 @@ const accountSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    employee: {
-      type: mongoose.Schema.ObjectId,
-      ref: "Employee",
-      required: true,
-    },
   },
   {
     timestamps: true,

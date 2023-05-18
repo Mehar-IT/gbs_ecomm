@@ -9,6 +9,7 @@ const account = require("./routes/accountRoute");
 const order = require("./routes/orderRoute");
 const payment = require("./routes/paymentRoute");
 const category = require("./routes/categoryRoute");
+const wallet = require("./routes/walletRoute");
 const errorMiddleWare = require("./middleware/error");
 const notFoundError = require("./middleware/404");
 const cookieParser = require("cookie-parser");
@@ -39,6 +40,7 @@ app.use("/api/v1", order);
 app.use("/api/v1", payment);
 app.use("/api/v1", category);
 app.use("/api/v1", account);
+app.use("/api/v1", wallet);
 
 const routes = [];
 app._router.stack.forEach((middleware) => {
@@ -88,7 +90,8 @@ routes.map(({ path, method }) => {
     !path.startsWith("/tax/getSingleTax") &&
     !path.startsWith("/tax/getAllTaxes") &&
     !path.startsWith("/tax/getSingleTaxByCountry") &&
-    !path.startsWith("/account/get")
+    !path.startsWith("/account/get") &&
+    !path.startsWith("/wallet/get")
   ) {
     let data = path
       .replace(/[/]/g, " ")
