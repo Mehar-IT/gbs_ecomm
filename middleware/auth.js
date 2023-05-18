@@ -12,9 +12,9 @@ exports.isAuthenticated = asyncErrorHandler(async (req, res, next) => {
     return next(new ErrorHandler("please login to access this resource", 401));
   }
 
-  const decodedToken = decryptData(token);
+  // const decodedToken = decryptData(token);
 
-  const decodedData = JWT.verify(decodedToken, process.env.JWT_KEY);
+  const decodedData = JWT.verify(token, process.env.JWT_KEY);
   const user = await User.findById(decodedData.id);
   if (!user) {
     return next(new ErrorHandler("please login to access this resource", 401));
@@ -32,9 +32,9 @@ exports.isAuthenticatedForEmployee = asyncErrorHandler(
       );
     }
 
-    const decodedToken = decryptData(token);
+    // const decodedToken = decryptData(token);
 
-    const decodedData = JWT.verify(decodedToken, process.env.JWT_KEY);
+    const decodedData = JWT.verify(token, process.env.JWT_KEY);
     const employee = await Employee.findById(decodedData.id);
     if (!employee) {
       return next(
