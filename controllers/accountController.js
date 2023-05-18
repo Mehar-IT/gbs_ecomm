@@ -3,7 +3,14 @@ const ErrorHandler = require("../utils/errorhandlers");
 const asyncErrorHandler = require("../middleware/asyncErrorHandler");
 
 exports.createAccount = asyncErrorHandler(async (req, res, next) => {
-  const { accTitle, bankName, accNumber, swiftCode, bankAddress } = req.body;
+  const {
+    accTitle,
+    bankName,
+    accNumber,
+    swiftCode,
+    bankAddress,
+    routingNumber,
+  } = req.body;
 
   const account = await Account({
     accTitle,
