@@ -18,6 +18,10 @@ const accountSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    routingNumber: {
+      type: String,
+      required: true,
+    },
     bankAddress: {
       type: String,
       required: true,
