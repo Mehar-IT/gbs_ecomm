@@ -20,6 +20,7 @@ exports.createProduct = asyncErrorHandler(async (req, res, next) => {
     const result = await cloudinary.v2.uploader.upload(images[i], {
       folder: "products",
       width: 300,
+      height: 300,
       crop: "scale",
     });
     imagesLink.push({
@@ -108,6 +109,7 @@ exports.updateProduct = asyncErrorHandler(async (req, res, next) => {
       const result = await cloudinary.v2.uploader.upload(images[i], {
         folder: "products",
         width: 300,
+        height: 300,
         crop: "scale",
       });
       imagesLink.push({

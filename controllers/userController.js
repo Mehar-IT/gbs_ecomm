@@ -229,7 +229,8 @@ exports.updateUserProfile = asyncErrorHandler(async (req, res) => {
     await cloudinary.v2.uploader.destroy(imageId);
     const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
       folder: "avatars",
-      width: 150,
+      width: 300,
+      height: 300,
       crop: "scale",
     });
     newUserData.avatar = {
