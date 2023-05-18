@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const JWT = require("jsonwebtoken");
-// const { encryptData } = require("../utils/cipher");
+const { encryptData } = require("../utils/cipher");
 
 const employeeSchema = new mongoose.Schema({
   name: {
@@ -49,8 +49,7 @@ employeeSchema.methods.getJwtToken = function () {
   const token = JWT.sign({ id: this._id }, process.env.JWT_KEY, {
     expiresIn: process.env.JWT_EXPIRE,
   });
-  // return encryptData(token);
-  return token;
+  return encryptData(token);
 };
 
 module.exports = mongoose.model("Employee", employeeSchema);

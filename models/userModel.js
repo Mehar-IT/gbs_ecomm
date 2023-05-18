@@ -3,7 +3,7 @@ const validator = require("validator");
 const bcryptjs = require("bcryptjs");
 const JWT = require("jsonwebtoken");
 const crypto = require("crypto");
-// const { encryptData } = require("../utils/cipher");
+const { encryptData } = require("../utils/cipher");
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -80,8 +80,7 @@ userSchema.methods.getJwtToken = function () {
   const token = JWT.sign({ id: this._id }, process.env.JWT_KEY, {
     expiresIn: process.env.JWT_EXPIRE,
   });
-  // return encryptData(token);
-  return token;
+  return encryptData(token);
 };
 
 userSchema.methods.resetPassword = function () {
