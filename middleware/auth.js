@@ -7,14 +7,15 @@ const { decryptData } = require("../utils/cipher");
 const Roles = require("../models/userRolesModel");
 
 exports.isAuthenticated = asyncErrorHandler(async (req, res, next) => {
-  const { token } = req.cookies;
-  if (!token) {
+  const token = req.get("Authorization")?.split(" ").slice(-1)[0];
+
+  if (!token || token === null) {
     return next(new ErrorHandler("please login to access this resource", 401));
   }
 
   const decodedToken = decryptData(token);
-
   const decodedData = JWT.verify(decodedToken, process.env.JWT_KEY);
+
   const user = await User.findById(decodedData.id);
   if (!user) {
     return next(new ErrorHandler("please login to access this resource", 401));
@@ -25,16 +26,17 @@ exports.isAuthenticated = asyncErrorHandler(async (req, res, next) => {
 
 exports.isAuthenticatedForEmployee = asyncErrorHandler(
   async (req, res, next) => {
-    const { token } = req.cookies;
-    if (!token) {
+    const token = req.get("Authorization")?.split(" ").slice(-1)[0];
+
+    if (!token || token === null) {
       return next(
         new ErrorHandler("please login to access this resource", 401)
       );
     }
 
     const decodedToken = decryptData(token);
-
     const decodedData = JWT.verify(decodedToken, process.env.JWT_KEY);
+
     const employee = await Employee.findById(decodedData.id);
     if (!employee) {
       return next(
