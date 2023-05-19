@@ -59,11 +59,10 @@ const orderSchema = new mongoose.Schema(
       default: 0,
       required: true,
     },
-    // taxPrice: {
-    //   type: Number,
-    //   default: 0,
-    //   required: true,
-    // },
+    expectedDeliveryDate: {
+      type: Date,
+      required: true,
+    },
     shippingPrice: {
       type: Number,
       default: 0,

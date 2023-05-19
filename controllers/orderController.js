@@ -12,6 +12,10 @@ exports.newOrder = asyncErrorHandler(async (req, res, next) => {
 
   const totalPrice = itemsPrice + shippingPrice;
 
+  const currentDate = new Date();
+  const deliveryDate = new Date();
+  deliveryDate.setDate(currentDate.getDate() + process.env.DELIVERY);
+
   const order = await Order.create({
     shippingInfo,
     orderItems,
@@ -19,6 +23,7 @@ exports.newOrder = asyncErrorHandler(async (req, res, next) => {
     itemsPrice,
     shippingPrice,
     totalPrice: totalPrice,
+    expectedDeliveryDate: deliveryDate,
     vat: req.body?.vat,
     businessName: req.body?.businessName,
     businessAddress: req.body?.businessAddress,
