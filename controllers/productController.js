@@ -29,8 +29,6 @@ exports.createProduct = asyncErrorHandler(async (req, res, next) => {
     });
   }
 
-  console.log(req.body.category);
-
   req.body.images = imagesLink;
   req.body.user = req.user.id;
 

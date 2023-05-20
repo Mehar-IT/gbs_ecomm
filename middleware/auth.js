@@ -9,7 +9,7 @@ const Roles = require("../models/userRolesModel");
 exports.isAuthenticated = asyncErrorHandler(async (req, res, next) => {
   const token = req.get("Authorization")?.split(" ").slice(-1)[0];
 
-  if (!token || token === null) {
+  if (!token) {
     return next(new ErrorHandler("please login to access this resource", 401));
   }
 
@@ -28,7 +28,7 @@ exports.isAuthenticatedForEmployee = asyncErrorHandler(
   async (req, res, next) => {
     const token = req.get("Authorization")?.split(" ").slice(-1)[0];
 
-    if (!token || token === null) {
+    if (!token) {
       return next(
         new ErrorHandler("please login to access this resource", 401)
       );

@@ -7,6 +7,7 @@ const {
   updateOrder,
   deleteOrder,
   getFilteredOrder,
+  myDigitalOrders,
 } = require("../controllers/orderController");
 const {
   isAuthenticated,
@@ -19,6 +20,7 @@ const router = express.Router();
 router.route("/orders/createOrder").post(isAuthenticated, newOrder);
 router.route("/orders/getSingleOrder/:id").get(isAuthenticated, getSingleOrder);
 router.route("/orders/getUserOrders").get(isAuthenticated, myOrders);
+router.route("/orders/myDigitalOrders").get(isAuthenticated, myDigitalOrders);
 
 router
   .route("/orders/getSingleOrderByAdmin/:id")

@@ -63,6 +63,10 @@ const orderSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
+    // expectedDeliveryDate: {
+    //   type: mongoose.Schema.ObjectId,
+    //   ref: "Delivery",
+    // },
     shippingPrice: {
       type: Number,
       default: 0,

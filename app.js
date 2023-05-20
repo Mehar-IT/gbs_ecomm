@@ -9,6 +9,7 @@ const account = require("./routes/accountRoute");
 const order = require("./routes/orderRoute");
 const payment = require("./routes/paymentRoute");
 const category = require("./routes/categoryRoute");
+const delivery = require("./routes/deliveryRoute");
 const wallet = require("./routes/walletRoute");
 const errorMiddleWare = require("./middleware/error");
 const notFoundError = require("./middleware/404");
@@ -41,6 +42,7 @@ app.use("/api/v1", payment);
 app.use("/api/v1", category);
 app.use("/api/v1", account);
 app.use("/api/v1", wallet);
+app.use("/api/v1", delivery);
 
 const routes = [];
 app._router.stack.forEach((middleware) => {
