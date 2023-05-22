@@ -17,6 +17,11 @@ exports.registerUser = asyncErrorHandler(async (req, res, next) => {
     email,
     password,
     userIP: ip,
+    surname: req.body?.surname,
+    country: req.body?.country,
+    city: req.body?.city,
+    street: req.body?.street,
+    vat: req.body?.vat,
     avatar: {
       public_id: "random",
       url: "https://www.seekpng.com/png/detail/110-1100707_person-avatar-placeholder.png",
@@ -221,7 +226,15 @@ exports.updatePassword = asyncErrorHandler(async (req, res, next) => {
 });
 
 exports.updateUserProfile = asyncErrorHandler(async (req, res) => {
-  const newUserData = { name: req.body.name, userName: req.body.userName };
+  const newUserData = {
+    name: req.body.name,
+    userName: req.body.userName,
+    surname: req.body?.surname,
+    country: req.body?.country,
+    city: req.body?.city,
+    street: req.body?.street,
+    vat: req.body?.vat,
+  };
 
   if (req.body.avatar !== "" && req.body.avatar !== undefined) {
     const user = await User.findById(req.user.id);

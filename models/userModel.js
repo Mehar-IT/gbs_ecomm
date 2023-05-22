@@ -12,6 +12,11 @@ const userSchema = new mongoose.Schema({
     maxLength: [30, "name can not exceed 30 character "],
     minLength: [4, "name should have more than 4 character"],
   },
+  surname: String,
+  country: String,
+  city: String,
+  street: String,
+  vat: String,
   userName: {
     type: String,
     unique: true,
