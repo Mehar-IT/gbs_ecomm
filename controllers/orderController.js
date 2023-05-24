@@ -8,8 +8,7 @@ const sendEmail = require("../utils/sendEmail");
 const ApiFeature = require("../utils/apiFeature");
 
 exports.newOrder = asyncErrorHandler(async (req, res, next) => {
-  const { shippingInfo, orderItems, paymentInfo, itemsPrice, shippingPrice } =
-    req.body;
+  const { shippingInfo, orderItems, itemsPrice, shippingPrice } = req.body;
 
   const totalPrice = itemsPrice + shippingPrice;
 
@@ -52,7 +51,6 @@ exports.newOrder = asyncErrorHandler(async (req, res, next) => {
   const order = await Order({
     shippingInfo,
     orderItems,
-    paymentInfo,
     itemsPrice,
     shippingPrice,
     totalPrice: totalPrice,
@@ -96,6 +94,26 @@ exports.newOrder = asyncErrorHandler(async (req, res, next) => {
   } catch (error) {
     return next(new ErrorHandler(error.message, 500));
   }
+});
+
+exports.paymentOrder = asyncErrorHandler(async (req, res, next) => {
+  const order = await Order.findById(req.params.id).populate(
+    "user",
+    "name email"
+  );
+
+  if (!order) {
+    return next(new ErrorHandler("order not found with this id", 404));
+  }
+
+  order.paymentInfo = req.body.paymentInfo;
+  await order.save({ validateBeforeSave: true });
+
+  res.status(200).json({
+    success: true,
+    order,
+    message: `payment success against order id ${req.params.id}`,
+  });
 });
 
 exports.getSingleOrder = asyncErrorHandler(async (req, res, next) => {

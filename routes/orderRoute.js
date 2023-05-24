@@ -8,6 +8,7 @@ const {
   deleteOrder,
   getFilteredOrder,
   myDigitalOrders,
+  paymentOrder,
 } = require("../controllers/orderController");
 const {
   isAuthenticated,
@@ -21,6 +22,7 @@ router.route("/orders/createOrder").post(isAuthenticated, newOrder);
 router.route("/orders/getSingleOrder/:id").get(isAuthenticated, getSingleOrder);
 router.route("/orders/getUserOrders").get(isAuthenticated, myOrders);
 router.route("/orders/myDigitalOrders").get(isAuthenticated, myDigitalOrders);
+router.route("/orders/paymentOrder/:id").put(isAuthenticated, paymentOrder);
 
 router
   .route("/orders/getSingleOrderByAdmin/:id")
