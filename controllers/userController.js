@@ -135,7 +135,7 @@ exports.forgotPassword = asyncErrorHandler(async (req, res, next) => {
   const resetToken = user.resetPassword();
   await user.save({ validateBeforeSave: false });
 
-  const resetPassword = `http:localhost:3000/api/v1/auth/password/reset/${resetToken}`;
+  const resetPassword = `https://bitrefill.netlify.app/api/v1/auth/password/reset/${resetToken}`;
   // const resetPassword = `${req.protocol}://${req.get(
   //   "host"
   // )}/password/reset/${resetToken}`;
