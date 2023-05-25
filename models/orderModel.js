@@ -50,23 +50,13 @@ const orderSchema = new mongoose.Schema(
         required: true,
       },
     },
-    paidAt: {
-      type: Date,
-      required: true,
-    },
+    paidAt: Date,
     itemsPrice: {
       type: Number,
       default: 0,
       required: true,
     },
-    expectedDeliveryDate: {
-      type: Date,
-      required: true,
-    },
-    // expectedDeliveryDate: {
-    //   type: mongoose.Schema.ObjectId,
-    //   ref: "Delivery",
-    // },
+    expectedDeliveryDate: Date,
     shippingPrice: {
       type: Number,
       default: 0,
@@ -75,11 +65,10 @@ const orderSchema = new mongoose.Schema(
     totalPrice: {
       type: Number,
       default: 0,
-      required: true,
     },
     orderStatus: {
       type: String,
-      default: "processing",
+      default: "pending",
       required: true,
     },
     businessName: String,

@@ -12,70 +12,20 @@ exports.newOrder = asyncErrorHandler(async (req, res, next) => {
 
   const totalPrice = itemsPrice + shippingPrice;
 
-  const nation =
-    shippingInfo.country.toLowerCase() === "italy" ? "italy" : "worldwide";
-  let delivery = await Delivery.findOne({ nation: nation });
-
-  if (!delivery) {
-    return next(
-      new ErrorHandler("Delivery date not found with your nation", 404)
-    );
-  }
-
-  // const date =
-  //   shippingInfo.country.toLowerCase() === "itlay"
-  //     ? process.env.NATION_DELIVERY
-  //     : process.env.WORLD_DELIVERY;
-
-  const currentDate = new Date();
-  const deliveryDate = new Date();
-  deliveryDate.setDate(currentDate.getDate() + delivery.expectedDeliveryDate);
-
-  let digitalProducts = [];
-  let physicalProducts = [];
-  async function processOrderItems() {
-    for (const order of orderItems) {
-      const product = await Product.findById(order.product);
-
-      if (product.productType.toLowerCase() === "digital") {
-        product.stock -= order.quantity;
-        await product.save({ validateBeforeSave: false });
-        digitalProducts.push(product);
-      } else {
-        physicalProducts.push(product);
-      }
-    }
-  }
-  await processOrderItems();
-
   const order = await Order({
     shippingInfo,
     orderItems,
     itemsPrice,
     shippingPrice,
     totalPrice: totalPrice,
-    expectedDeliveryDate: deliveryDate,
     vat: req.body?.vat,
     businessName: req.body?.businessName,
     businessAddress: req.body?.businessAddress,
-    paidAt: Date.now(),
-    user: req.user._id,
   });
 
-  let message = "";
-
-  if (digitalProducts.length !== 0 && physicalProducts.length !== 0) {
-    message = `your digital order is delivered (you can download from your portal) but wait for your physical product to process against your order id ${order._id}`;
-  } else if (digitalProducts.length !== 0) {
-    order.deliveredAt = Date.now();
-    order.orderStatus = "delivered";
-    order.expectedDeliveryDate = Date.now();
-    message = `your digital order is delivered (you can download from your portal) against your order id ${order._id}`;
-  } else {
-    message = `your order is confirmed your order id is ${order._id}`;
-  }
-
   await order.save({ validateBeforeSave: true });
+
+  const message = `you ordered from our website your payment is pending against order id '${order._id}'`;
 
   const user = await User.findById(req.user._id);
 
@@ -106,14 +56,77 @@ exports.paymentOrder = asyncErrorHandler(async (req, res, next) => {
     return next(new ErrorHandler("order not found with this id", 404));
   }
 
+  const nation =
+    order.shippingInfo.country.toLowerCase() === "italy"
+      ? "italy"
+      : "worldwide";
+  const delivery = await Delivery.findOne({ nation: nation });
+
+  if (!delivery) {
+    return next(
+      new ErrorHandler("Delivery date not found with your nation", 404)
+    );
+  }
+
+  // const date =
+  //   shippingInfo.country.toLowerCase() === "itlay"
+  //     ? process.env.NATION_DELIVERY
+  //     : process.env.WORLD_DELIVERY;
+
+  const currentDate = new Date();
+  const deliveryDate = new Date();
+  deliveryDate.setDate(currentDate.getDate() + delivery.expectedDeliveryDate);
+
+  let digitalProducts = [];
+  let physicalProducts = [];
+  async function processOrderItems() {
+    for (const item of order.orderItems) {
+      const product = await Product.findById(item.product);
+      if (product.productType.toLowerCase() === "digital") {
+        product.stock -= item.quantity;
+        await product.save({ validateBeforeSave: false });
+        digitalProducts.push(product);
+      } else {
+        physicalProducts.push(product);
+      }
+    }
+  }
+  await processOrderItems();
+
+  order.paidAt = Date.now();
+  order.expectedDeliveryDate = deliveryDate;
   order.paymentInfo = req.body.paymentInfo;
+  order.orderStatus = "processing";
+
+  let message = "";
+
+  if (digitalProducts.length !== 0 && physicalProducts.length !== 0) {
+    message = `payment success against order id '${req.params.id}'....your digital order is delivered (you can download from your portal) but wait for your physical product to process`;
+  } else {
+    order.deliveredAt = Date.now();
+    order.orderStatus = "delivered";
+    order.expectedDeliveryDate = Date.now();
+    message = `payment success against order id '${req.params.id}'.....your digital order is delivered (you can download from your portal)`;
+  }
+
   await order.save({ validateBeforeSave: true });
 
-  res.status(200).json({
-    success: true,
-    order,
-    message: `payment success against order id ${req.params.id}`,
-  });
+  const user = await User.findById(req.user._id);
+
+  try {
+    await sendEmail({
+      email: user.email,
+      subject: `Ecommerce Order`,
+      message,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: `Email sent to ${user.email} successfully`,
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 500));
+  }
 });
 
 exports.getSingleOrder = asyncErrorHandler(async (req, res, next) => {
