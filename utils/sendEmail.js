@@ -1,6 +1,8 @@
 const nodemailer = require("nodemailer");
+const ejs = require("ejs");
+const path = require("path");
 
-const sendEmail = async (options) => {
+const sendEmail = async ({ email, subject, file, obj }) => {
   const trasporter = nodemailer.createTransport({
     host: process.env.SMPT_HOST,
     port: process.env.SMPT_PORT,
@@ -11,11 +13,15 @@ const sendEmail = async (options) => {
     },
   });
 
+  const requiredPath = path.join(__dirname, `../views/${file}.ejs`);
+
+  const html = await ejs.renderFile(requiredPath, obj);
+
   const mailOption = {
     from: process.env.SMPT_MAIL,
-    to: options.email,
-    subject: options.subject,
-    text: options.message,
+    to: email,
+    subject,
+    html,
   };
 
   await trasporter.sendMail(mailOption);

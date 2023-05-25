@@ -25,15 +25,16 @@ exports.newOrder = asyncErrorHandler(async (req, res, next) => {
 
   await order.save({ validateBeforeSave: true });
 
-  const message = `you ordered from our website your payment is pending against order id '${order._id}'`;
-
   const user = await User.findById(req.user._id);
 
   try {
     await sendEmail({
       email: user.email,
       subject: `Ecommerce Order`,
-      message,
+      file: "confrimOrder",
+      obj: {
+        objectID: `${process.env.BASE_URL}/orders/getSingleOrder/${order._id}`,
+      },
     });
 
     res.status(200).json({
@@ -98,17 +99,21 @@ exports.paymentOrder = asyncErrorHandler(async (req, res, next) => {
   order.paymentInfo = req.body.paymentInfo;
   order.orderStatus = "processing";
 
-  let message = "";
-
+  let file = "";
   if (digitalProducts.length !== 0 && physicalProducts.length !== 0) {
-    message = `payment success against order id '${req.params.id}'....your digital order is delivered (you can download from your portal) but wait for your physical product to process`;
+    file = "confrimOrder";
+    // message = `payment success against order id '${req.params.id}'....your digital order is delivered (you can download from your portal) but wait for your physical product to process`;
   } else {
     order.deliveredAt = Date.now();
     order.orderStatus = "delivered";
     order.expectedDeliveryDate = Date.now();
-    message = `payment success against order id '${req.params.id}'.....your digital order is delivered (you can download from your portal)`;
+    file = "delivered";
+    // message = `payment success against order id '${req.params.id}'.....your digital order is delivered (you can download from your portal)`;
   }
 
+  const obj = {
+    objectID: `${process.env.BASE_URL}/orders/getSingleOrder/${order._id}`,
+  };
   await order.save({ validateBeforeSave: true });
 
   const user = await User.findById(req.user._id);
@@ -117,7 +122,8 @@ exports.paymentOrder = asyncErrorHandler(async (req, res, next) => {
     await sendEmail({
       email: user.email,
       subject: `Ecommerce Order`,
-      message,
+      file,
+      obj,
     });
 
     res.status(200).json({
@@ -194,7 +200,8 @@ exports.updateOrder = asyncErrorHandler(async (req, res, next) => {
       await updateStock(order.product, order.quantity);
     });
     sendEmailOrder(
-      req.body.status.toLowerCase(),
+      // req.body.status.toLowerCase(),
+      "shipped",
       order._id,
       order.user.email,
       next
@@ -206,7 +213,8 @@ exports.updateOrder = asyncErrorHandler(async (req, res, next) => {
     order.deliveredAt = Date.now();
     order.expectedDeliveryDate = Date.now();
     sendEmailOrder(
-      req.body.status.toLowerCase(),
+      // req.body.status.toLowerCase(),
+      "delivered",
       order._id,
       order.user.email,
       next
@@ -228,13 +236,22 @@ async function updateStock(id, quantity) {
   await product.save({ validateBeforeSave: false });
 }
 
-async function sendEmailOrder(status, orderID, email, next) {
-  const message = `your Order is ${status} against order id ${orderID}`;
+async function sendEmailOrder(file, orderID, email, next) {
+  // const message = `your Order is ${status} against order id ${orderID}`;
+  const obj = {
+    objectID: `${process.env.BASE_URL}/orders/getSingleOrder/${orderID}`,
+  };
   try {
+    // await sendEmail({
+    //   email,
+    //   subject: `Ecommerce Order`,
+    //   message,
+    // });
     await sendEmail({
-      email,
+      email: email,
       subject: `Ecommerce Order`,
-      message,
+      file,
+      obj,
     });
   } catch (error) {
     return next(new ErrorHandler(error.message, 500));

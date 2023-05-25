@@ -5,7 +5,6 @@ const sendToken = require("../utils/jwtToken");
 const sendEmail = require("../utils/sendEmail");
 const crypto = require("crypto");
 const cloudinary = require("cloudinary");
-// const http = require("http");
 
 exports.registerUser = asyncErrorHandler(async (req, res, next) => {
   const { name, email, password, userName } = req.body;
@@ -31,13 +30,14 @@ exports.registerUser = asyncErrorHandler(async (req, res, next) => {
   const token = user.otpGeneration();
   await user.save({ validateBeforeSave: true });
 
-  const message = `your OTP token is :- \n\n ${token} \n\n If you have not requested this OTP then, please ignore it`;
-
   try {
     await sendEmail({
       email,
       subject: `Ecommerce Project OTP `,
-      message,
+      file: "otp",
+      obj: {
+        otp: token,
+      },
     });
 
     res.status(201).json({
@@ -79,13 +79,14 @@ exports.loginUser = asyncErrorHandler(async (req, res, next) => {
     const token = user.otpGeneration();
     await user.save({ validateBeforeSave: false });
 
-    const message = `your OTP token is :- \n\n ${token} \n\n If you have not requested this OTP then, please ignore it`;
-
     try {
       await sendEmail({
-        email: user.email,
-        subject: `Ecommerce Porject OTP `,
-        message,
+        email,
+        subject: `Ecommerce Project OTP `,
+        file: "otp",
+        obj: {
+          otp: token,
+        },
       });
 
       return res.status(201).json({
@@ -135,20 +136,19 @@ exports.forgotPassword = asyncErrorHandler(async (req, res, next) => {
   const resetToken = user.resetPassword();
   await user.save({ validateBeforeSave: false });
 
-  const resetPassword = `https://bitrefill.netlify.app/api/v1/auth/password/reset/${resetToken}`;
+  const resetPassword = `${process.env.BASE_URL}/auth/password/reset/${resetToken}`;
   // const resetPassword = `${req.protocol}://${req.get(
   //   "host"
   // )}/password/reset/${resetToken}`;
 
-  // const resetPassword = `${process.env.FRONTEND_URL}/api/v1/password/reset/${resetToken}`;
-
-  const message = `your password reset token is :- \n\n ${resetPassword} \n\n If you have not requested this email then, please ignore it`;
+  const obj = { message: resetPassword };
 
   try {
     await sendEmail({
       email: user.email,
       subject: `Ecommerce Password Recovery`,
-      message,
+      obj,
+      file: "forgot",
     });
 
     res.status(200).json({
@@ -305,15 +305,12 @@ exports.updateUserByAdmin = asyncErrorHandler(async (req, res, next) => {
       new ErrorHandler(`user not found with id ${req.params.id}`, 404)
     );
   }
-  const message = `your information is updated by Admin`;
-
   try {
     await sendEmail({
-      email: user.email,
+      email,
       subject: `Ecommerce Project OTP `,
-      message,
+      file: "success",
     });
-
     res.status(200).json({
       success: true,
       message: `Email sent to ${user.email} successfully`,
@@ -390,13 +387,14 @@ exports.resentOTP = asyncErrorHandler(async (req, res, next) => {
   const token = user.otpGeneration();
   await user.save({ validateBeforeSave: false });
 
-  const message = `your OTP token is :- \n\n ${token} \n\n If you have not requested this OTP then, please ignore it`;
-
   try {
     await sendEmail({
-      email: email,
+      email,
       subject: `Ecommerce Project OTP `,
-      message,
+      file: "otp",
+      obj: {
+        otp: token,
+      },
     });
 
     res.status(200).json({
