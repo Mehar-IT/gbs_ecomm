@@ -31,7 +31,7 @@ exports.newOrder = asyncErrorHandler(async (req, res, next) => {
     await sendEmail({
       email: user.email,
       subject: `Ecommerce Order`,
-      file: "confrimOrder",
+      file: "pendingOrder",
       obj: {
         objectID: `${process.env.BASE_URL}/orders/getSingleOrder/${order._id}`,
       },
