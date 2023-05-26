@@ -3,6 +3,7 @@ const {
   createDelivery,
   getDeliveryByNation,
   updateDeliveryByNation,
+  getAllDelivery,
 } = require("../controllers/deliveryController");
 const {
   authorizePermisions,
@@ -17,6 +18,9 @@ router
 router
   .route("/delivery/getDeliveryByNation")
   .get(isAuthenticatedForEmployee, authorizePermisions, getDeliveryByNation);
+router
+  .route("/delivery/getAllDelivery")
+  .get(isAuthenticatedForEmployee, authorizePermisions, getAllDelivery);
 router
   .route("/delivery/updateDeliveryByNation")
   .put(isAuthenticatedForEmployee, authorizePermisions, updateDeliveryByNation);

@@ -29,6 +29,15 @@ exports.getDeliveryByNation = asyncErrorHandler(async (req, res, next) => {
   });
 });
 
+exports.getAllDelivery = asyncErrorHandler(async (req, res, next) => {
+  const deliveries = await Delivery.findOne();
+
+  res.status(200).json({
+    success: true,
+    deliveries,
+  });
+});
+
 exports.updateDeliveryByNation = asyncErrorHandler(async (req, res, next) => {
   const delivery = await Delivery.findOneAndUpdate(
     { nation: req.query.nation },
