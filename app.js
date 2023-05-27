@@ -11,6 +11,7 @@ const payment = require("./routes/paymentRoute");
 const category = require("./routes/categoryRoute");
 const delivery = require("./routes/deliveryRoute");
 const wallet = require("./routes/walletRoute");
+const mail = require("./routes/mailRoute");
 const errorMiddleWare = require("./middleware/error");
 const notFoundError = require("./middleware/404");
 const cookieParser = require("cookie-parser");
@@ -43,6 +44,7 @@ app.use("/api/v1", category);
 app.use("/api/v1", account);
 app.use("/api/v1", wallet);
 app.use("/api/v1", delivery);
+app.use("/api/v1", mail);
 
 const routes = [];
 app._router.stack.forEach((middleware) => {

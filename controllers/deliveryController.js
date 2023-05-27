@@ -30,7 +30,7 @@ exports.getDeliveryByNation = asyncErrorHandler(async (req, res, next) => {
 });
 
 exports.getAllDelivery = asyncErrorHandler(async (req, res, next) => {
-  const deliveries = await Delivery.findOne();
+  const deliveries = await Delivery.find();
 
   res.status(200).json({
     success: true,
