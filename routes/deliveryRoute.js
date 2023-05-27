@@ -15,12 +15,8 @@ router
   .route("/delivery/createDelivery")
   .post(isAuthenticatedForEmployee, authorizePermisions, createDelivery);
 
-router
-  .route("/delivery/getDeliveryByNation")
-  .get(isAuthenticatedForEmployee, authorizePermisions, getDeliveryByNation);
-router
-  .route("/delivery/getAllDelivery")
-  .get(isAuthenticatedForEmployee, authorizePermisions, getAllDelivery);
+router.route("/delivery/getDeliveryByNation").get(getDeliveryByNation);
+router.route("/delivery/getAllDelivery").get(getAllDelivery);
 router
   .route("/delivery/updateDeliveryByNation")
   .put(isAuthenticatedForEmployee, authorizePermisions, updateDeliveryByNation);
