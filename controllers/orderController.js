@@ -8,7 +8,8 @@ const sendEmail = require("../utils/sendEmail");
 const ApiFeature = require("../utils/apiFeature");
 
 exports.newOrder = asyncErrorHandler(async (req, res, next) => {
-  const { shippingInfo, orderItems, itemsPrice, shippingPrice } = req.body;
+  const { shippingInfo, orderItems, itemsPrice, shippingPrice, paymentInfo } =
+    req.body;
 
   const totalPrice = itemsPrice + shippingPrice;
 
@@ -24,6 +25,70 @@ exports.newOrder = asyncErrorHandler(async (req, res, next) => {
     businessAddress: req.body?.businessAddress,
   });
 
+  let file = "";
+
+  if (paymentInfo) {
+    file = "confrimOrder";
+    // order.paymentInfo = paymentInfo;
+    // order.orderStatus = "processing";
+
+    const nation =
+      order.shippingInfo.country.toLowerCase() === "italy"
+        ? "italy"
+        : "worldwide";
+    const delivery = await Delivery.findOne({ nation: nation });
+
+    if (!delivery) {
+      return next(
+        new ErrorHandler("Delivery date not found with your nation", 404)
+      );
+    }
+
+    const currentDate = new Date();
+    const deliveryDate = new Date();
+    deliveryDate.setDate(currentDate.getDate() + delivery.expectedDeliveryDate);
+
+    let digitalProducts = [];
+    let physicalProducts = [];
+    async function processOrderItems() {
+      for (const item of order.orderItems) {
+        const product = await Product.findById(item.product);
+        if (product.productType.toLowerCase() === "digital") {
+          product.stock -= item.quantity;
+          await product.save({ validateBeforeSave: false });
+          digitalProducts.push(product);
+        } else {
+          physicalProducts.push(product);
+        }
+      }
+    }
+    await processOrderItems();
+
+    order.paidAt = Date.now();
+    order.expectedDeliveryDate = deliveryDate;
+    order.paymentInfo = paymentInfo;
+    order.orderStatus = "processing";
+
+    if (
+      (digitalProducts.length === 0 || digitalProducts.length !== 0) &&
+      physicalProducts.length !== 0
+    ) {
+      file = "confrimOrder";
+    } else {
+      order.deliveredAt = Date.now();
+      order.orderStatus = "delivered";
+      order.expectedDeliveryDate = Date.now();
+      file = "delivered";
+      // message = `payment success against order id '${req.params.id}'.....your digital order is delivered (you can download from your portal)`;
+    }
+  } else {
+    file = "pendingOrder";
+  }
+
+  const obj = {
+    orderID: `${process.env.BASE_URL}/orders/getSingleOrder/${order._id}`,
+  };
+
   await order.save({ validateBeforeSave: true });
 
   const user = await User.findById(req.user._id);
@@ -32,16 +97,13 @@ exports.newOrder = asyncErrorHandler(async (req, res, next) => {
     await sendEmail({
       email: user.email,
       subject: `Ecommerce Order`,
-      file: "pendingOrder",
-      obj: {
-        orderID: `${process.env.BASE_URL}/orders/getSingleOrder/${order._id}`,
-      },
+      file,
+      obj,
     });
 
     res.status(200).json({
       success: true,
       message: `Email sent to ${user.email} successfully`,
-      order,
     });
   } catch (error) {
     return next(new ErrorHandler(error.message, 500));
@@ -333,3 +395,26 @@ exports.myDigitalOrders = asyncErrorHandler(async (req, res, next) => {
     digitalProducts,
   });
 });
+
+// await order.save({ validateBeforeSave: true });
+
+// const user = await User.findById(req.user._id);
+
+// try {
+//   await sendEmail({
+//     email: user.email,
+//     subject: `Ecommerce Order`,
+//     file,
+//     obj: {
+//       orderID: `${process.env.BASE_URL}/orders/getSingleOrder/${order._id}`,
+//     },
+//   });
+
+//   res.status(200).json({
+//     success: true,
+//     message: `Email sent to ${user.email} successfully`,
+//     order,
+//   });
+// } catch (error) {
+//   return next(new ErrorHandler(error.message, 500));
+// }
