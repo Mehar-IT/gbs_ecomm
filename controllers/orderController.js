@@ -34,7 +34,7 @@ exports.newOrder = asyncErrorHandler(async (req, res, next) => {
       subject: `Ecommerce Order`,
       file: "pendingOrder",
       obj: {
-        objectID: `${process.env.BASE_URL}/orders/getSingleOrder/${order._id}`,
+        orderID: `${process.env.BASE_URL}/orders/getSingleOrder/${order._id}`,
       },
     });
 
@@ -56,6 +56,15 @@ exports.paymentOrder = asyncErrorHandler(async (req, res, next) => {
 
   if (!order) {
     return next(new ErrorHandler("order not found with this id", 404));
+  }
+
+  if (order.orderStatus !== "pending") {
+    return next(
+      new ErrorHandler(
+        "order is not pending you already payment against this order",
+        400
+      )
+    );
   }
 
   const nation =
@@ -113,7 +122,7 @@ exports.paymentOrder = asyncErrorHandler(async (req, res, next) => {
   }
 
   const obj = {
-    objectID: `${process.env.BASE_URL}/orders/getSingleOrder/${order._id}`,
+    orderID: `${process.env.BASE_URL}/orders/getSingleOrder/${order._id}`,
   };
   await order.save({ validateBeforeSave: true });
 
@@ -190,6 +199,15 @@ exports.updateOrder = asyncErrorHandler(async (req, res, next) => {
     return next(new ErrorHandler("order not found with this id", 404));
   }
 
+  if (order.orderStatus === "pending") {
+    return next(
+      new ErrorHandler(
+        `payment is pending agianst this order id ${order._id}`,
+        400
+      )
+    );
+  }
+
   if (order.orderStatus === "delivered") {
     return next(
       new ErrorHandler("you have already deliverd this product", 400)
@@ -202,7 +220,7 @@ exports.updateOrder = asyncErrorHandler(async (req, res, next) => {
     });
     sendEmailOrder(
       // req.body.status.toLowerCase(),
-      "shipped",
+      "shippedOrder",
       order._id,
       order.user.email,
       next
@@ -240,7 +258,7 @@ async function updateStock(id, quantity) {
 async function sendEmailOrder(file, orderID, email, next) {
   // const message = `your Order is ${status} against order id ${orderID}`;
   const obj = {
-    objectID: `${process.env.BASE_URL}/orders/getSingleOrder/${orderID}`,
+    orderID: `${process.env.BASE_URL}/orders/getSingleOrder/${orderID}`,
   };
   try {
     // await sendEmail({
